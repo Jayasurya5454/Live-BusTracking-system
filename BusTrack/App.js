@@ -1,53 +1,26 @@
-// HomeScreen.js
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+// App.js
 
-const HomeScreen = ({ navigation }) => {
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './components/HomeScreen/HomeScreen';
+import StudentLogin from './components/StudentLogin/StudentLogin';
+import DriverLogin from './components/DriverLogin/DriverLogin';
+import AdminLogin from './components/AdminLogin/AdminLogin';
+
+const Stack = createStackNavigator();
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={[styles.card, styles.studentTeacherCard]} onPress={() => navigation.navigate('Student')}>
-        <Text style={styles.cardText}>Student</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity style={[styles.card, styles.driverCard]} onPress={() => navigation.navigate('Driver')}>
-        <Text style={styles.cardText}>Driver</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={[styles.card, styles.adminCard]} onPress={() => navigation.navigate('Admin')}>
-        <Text style={styles.cardText}>Admin</Text>
-      </TouchableOpacity>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Student" component={StudentLogin} />
+        <Stack.Screen name="Driver" component={DriverLogin} />
+        <Stack.Screen name="Admin" component={AdminLogin} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'light', // Set background color to yellow
-  },
-  card: {
-    width: 150,
-    height: 150,
-    borderRadius: 10,
-    margin: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cardText: {
-    fontSize: 20,
-  },
-  studentTeacherCard: {
-    backgroundColor: '#ffc107', // Set unique color for student & teacher card
-  },
-  driverCard: {
-    backgroundColor: '#4caf50', // Set unique color for driver card
-  },
-  adminCard: {
-    backgroundColor: '#2196f3', // Set unique color for admin card
-  },
-});
-
-export default HomeScreen;
+export default App;

@@ -5,8 +5,8 @@ import HomeScreen from './components/HomeScreen/HomeScreen';
 import StudentLogin from './components/StudentLogin/StudentLogin';
 import DriverLogin from './components/DriverLogin/DriverLogin';
 import AdminLogin from './components/Admin /AdminLogin/AdminLogin';
-import AdminDashboard from './components/Admin /AdminDashboard/AdminDashboard';
-import AddRecordForm from './components/Admin /AddRecordForm/ AddRecordForm';
+import AdminDashboard from './components/Admin/AdminDashboard/AdminDashboard';
+import AddRecordForm from './components/Admin/AddRecordForm/AddRecordForm';
 const Stack = createStackNavigator();
 
 const App = () => {

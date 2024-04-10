@@ -6,7 +6,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={[styles.card, styles.studentTeacherCard]} onPress={() => navigation.navigate('Student')}>
-        <Text style={styles.cardText}>Student & Teacher</Text>
+        <Text style={styles.cardText}>Student</Text>
       </TouchableOpacity>
       
       <TouchableOpacity style={[styles.card, styles.driverCard]} onPress={() => navigation.navigate('Driver')}>

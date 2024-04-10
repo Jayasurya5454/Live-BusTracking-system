@@ -4,9 +4,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './components/HomeScreen/HomeScreen';
 import StudentLogin from './components/StudentLogin/StudentLogin';
 import DriverLogin from './components/DriverLogin/DriverLogin';
-import AdminLogin from './components/AdminLogin/AdminLogin';
-import AdminDashboard from './components/AdminDashboard/AdminDashboard';
-
+import AdminLogin from './components/Admin /AdminLogin/AdminLogin';
+import AdminDashboard from './components/Admin /AdminDashboard/AdminDashboard';
+import AddRecordForm from './components/Admin /AddRecordForm/ AddRecordForm';
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -18,6 +18,7 @@ const App = () => {
         <Stack.Screen name="Driver" component={DriverLogin} />
         <Stack.Screen name="Admin" component={AdminLogin} />
         <Stack.Screen name="AdminDashboard" component={AdminDashboard} /> 
+        <Stack.Screen name="AddRecord" component={AddRecordForm} />
       </Stack.Navigator>
     </NavigationContainer>
   );

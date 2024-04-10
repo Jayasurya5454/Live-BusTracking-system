@@ -9,14 +9,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginVertical: 10,
     width: '80%',
+    height: 40,
+    borderWidth: 1,
+    borderColor: 'gray',
+    marginVertical: 10,
+    paddingHorizontal: 10,
   },
-  // Add more styles as needed
 });
 
 export default styles;

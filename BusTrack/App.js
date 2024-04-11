@@ -11,12 +11,11 @@ import FacultyLogin from './components/FacultyLogin/FacultyLogin';
 import StudentInfoScreen from './components/StudentLogin/StudentInfoScreen';
 const Stack = createStackNavigator();
 
-
-
 const App = () => {
+  
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+    <NavigationContainer >
+      <Stack.Navigator initialRouteName="Home" >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Student" component={StudentLogin} />
         <Stack.Screen name="Driver" component={DriverLogin} />

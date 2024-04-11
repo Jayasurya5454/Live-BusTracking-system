@@ -32,15 +32,18 @@ const styles = StyleSheet.create({
     fontSize: 38, 
     fontWeight: 700, 
     color:'#3c009d',
-    marginBottom: 60,
+    marginBottom: 45,
 
   },
+
+ 
 
   input: {
     width: '80%',
     height: 60,
-    borderWidth: 1,
-    borderColor: 'gray',
+    borderBottomWidth: 1, // Add bottom border
+    borderBottomColor: 'black', 
+   
     marginVertical: 10,
     paddingHorizontal: 10,
     fontSize: 16,
@@ -49,7 +52,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '45%',
     
-    marginTop: 20,
+    marginTop: 50,
   },
   button: {
     width: '100%',

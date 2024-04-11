@@ -16,7 +16,7 @@ const AddRecordForm = ({ navigation }) => {
     if (!name || !rollNumber || !parentsName || !busNumber || !stopName || !parentsPhoneNumber || !email) {
       Alert.alert('Error', 'All fields are mandatory');
     } else {
-      // Create an object containing all the data
+      
       const recordData = {
         name,
         rollNumber,

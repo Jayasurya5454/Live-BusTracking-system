@@ -17,6 +17,11 @@ const HomeScreen = ({ navigation }) => {
       <TouchableOpacity style={[styles.card, styles.adminCard]} onPress={() => navigation.navigate('Admin')}>
         <Text style={styles.cardText}>Admin</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.card, styles.FacultyCard]} onPress={() => navigation.navigate('Faculty')}>
+        <Text style={styles.cardText}>Faculty</Text>
+      </TouchableOpacity>
+
     </View>
   );
 };
@@ -49,6 +54,9 @@ const styles = StyleSheet.create({
   },
   adminCard: {
     backgroundColor: '#2196f3',
+  },
+  FacultyCard: {
+    backgroundColor: '#219640',
   },
 });
 

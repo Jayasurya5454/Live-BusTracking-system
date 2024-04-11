@@ -9,6 +9,8 @@ import AdminDashboard from './components/Admin/AdminDashboard/AdminDashboard';
 import AddRecordForm from './components/Admin/AddRecordForm/AddRecordForm';
 import FacultyLogin from './components/FacultyLogin/FacultyLogin';
 import StudentInfoScreen from './components/StudentLogin/StudentInfoScreen';
+
+
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -29,8 +31,4 @@ const App = () => {
   );
 };
 
-
 export default App;
-
-
-

@@ -1,7 +1,7 @@
 // AdminLogin.js
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from './AdminLoginStyles';
 
@@ -24,21 +24,27 @@ const AdminLogin = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Admin Login</Text>
-      <TextInput 
-        placeholder="Enter Name" 
-        style={styles.input} 
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput 
-        placeholder="Enter Password" 
-        secureTextEntry={true} 
-        style={styles.input} 
-        value={password}
-        onChangeText={setPassword}
-      />
-      <Button title="Login" onPress={handleLogin} />
+      <View style={styles.inputContainer}>
+        <Text style={styles.title} >Admin Login</Text>
+        <TextInput 
+          placeholder="Enter Name" 
+          style={styles.input} 
+          value={name}
+          onChangeText={setName}
+        />
+        <TextInput 
+          placeholder="Enter Password" 
+          secureTextEntry={true} 
+          style={styles.input} 
+          value={password}
+          onChangeText={setPassword}
+        />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };

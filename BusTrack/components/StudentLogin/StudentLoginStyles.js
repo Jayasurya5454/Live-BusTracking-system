@@ -1,4 +1,4 @@
-// AdminLoginStyles.js
+
 
 import { StyleSheet } from 'react-native';
 

@@ -7,13 +7,13 @@ import { useNavigation } from '@react-navigation/native';
 const StudentLogin = () => {
   const navigation = useNavigation();
 
-  // Handle login logic here
+  
   const handleLogin = () => {
     // Implement your login logic here
     console.log('Student login button pressed');
     navigation.navigate('StudentInfoScreen');
   };
-  console.log('Rendering StudentLogin');
+  
 
   return (
     <View style={styles.container}>

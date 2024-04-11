@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 
@@ -5,13 +6,16 @@ const Stepper = () => {
   const steps = ["Customer Info", "Shipping Info", "Payment", "Step 4"];
   const [currentStep, setCurrentStep] = React.useState(1);
   const [complete, setComplete] = React.useState(false);
+=======
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import firebase from 'firebase/app';
+import 'firebase/database';
+>>>>>>> 6a73adb (added a nav)
 
+const Stepper = ({ steps, currentStep, complete }) => {
   const handleNext = () => {
-    if (currentStep === steps.length) {
-      setComplete(true);
-    } else {
-      setCurrentStep(prevStep => prevStep + 1);
-    }
+    
   };
 
   return (
@@ -36,16 +40,59 @@ const Stepper = () => {
 };
 
 const StudentInfoScreen = ({ navigation }) => {
+  const [studentData, setStudentData] = useState(null);
+  const [showStudentData, setShowStudentData] = useState(false);
+  const steps = ["Customer Info", "Shipping Info", "Payment", "Step 4"];
+  const [currentStep, setCurrentStep] = useState(1);
+  const [complete, setComplete] = useState(false);
+
+  useEffect(() => {
+    // Fetch data from Firebase
+    const fetchData = async () => {
+      try {
+        const snapshot = await firebase.database().ref('students').once('value');
+        const data = snapshot.val();
+        setStudentData(data);
+      } catch (error) {
+        console.error('Error fetching data from Firebase:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <View style={styles.container}>
       {/* Navigation bar */}
       <View style={styles.navBar}>
         <Text style={styles.navText}>Navigation Bar</Text>
-        <Button title="Back" onPress={() => navigation.goBack()} />
+        <TouchableOpacity onPress={() => setShowStudentData(!showStudentData)}>
+          <Text style={styles.navIcon}>Show Student Data</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Stepper */}
+<<<<<<< HEAD
       <Stepper />
+=======
+      <Stepper steps={steps} currentStep={currentStep} complete={complete} />
+
+      {/* Student data */}
+      {showStudentData && (
+        <View style={styles.studentDataContainer}>
+          <Text style={styles.studentDataTitle}>Student Data</Text>
+          {studentData ? (
+            <View>
+              <Text>Name: {studentData.name}</Text>
+              <Text>Email: {studentData.email}</Text>
+              {/* Add more fields as needed */}
+            </View>
+          ) : (
+            <Text>Loading student data...</Text>
+          )}
+        </View>
+      )}
+>>>>>>> 6a73adb (added a nav)
     </View>
   );
 };
@@ -63,6 +110,10 @@ const styles = StyleSheet.create({
   },
   navText: {
     fontSize: 20,
+  },
+  navIcon: {
+    fontSize: 16,
+    color: '#007BFF',
   },
   stepperContainer: {
     flexDirection: 'column',
@@ -96,6 +147,20 @@ const styles = StyleSheet.create({
   stepLabel: {
     marginTop: 5,
   },
+<<<<<<< HEAD
+=======
+  studentDataContainer: {
+    padding: 20,
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  studentDataTitle: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+>>>>>>> 6a73adb (added a nav)
 });
 
 export default StudentInfoScreen;

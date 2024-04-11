@@ -7,7 +7,11 @@ import DriverLogin from './components/DriverLogin/DriverLogin';
 import AdminLogin from './components/Admin/AdminLogin/AdminLogin';
 import AdminDashboard from './components/Admin/AdminDashboard/AdminDashboard';
 import AddRecordForm from './components/Admin/AddRecordForm/AddRecordForm';
+import FacultyLogin from './components/FacultyLogin/FacultyLogin';
+import StudentInfoScreen from './components/StudentLogin/StudentInfoScreen';
 const Stack = createStackNavigator();
+
+
 
 const App = () => {
   return (
@@ -19,9 +23,15 @@ const App = () => {
         <Stack.Screen name="Admin" component={AdminLogin} />
         <Stack.Screen name="AdminDashboard" component={AdminDashboard} /> 
         <Stack.Screen name="AddRecord" component={AddRecordForm} />
+        <Stack.Screen name="Faculty" component={FacultyLogin} />
+        <Stack.Screen name="StudentInfoScreen" component={StudentInfoScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
+
 export default App;
+
+
+

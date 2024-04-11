@@ -1,22 +1,73 @@
-// StudentLoginStyles.js
+// AdminLoginStyles.js
 
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex:1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor:'#fff'
+    
+  },
+
+  inputContainer: {
+    height: 500,
+    width:450,
+    borderWidth: 1,
+    borderColor: 'black',
+   justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+    overflow: 'hidden', 
+    elevation: 10, // Use elevation to create a shadow effect
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+  },
+
+  title: {
+    fontSize: 38, 
+    fontWeight: 700, 
+    color:'#3c009d',
+    marginBottom: 60,
+
+  },
+
+  input: {
+    width: '80%',
+    height: 60,
+    borderWidth: 1,
+    borderColor: 'gray',
+    marginVertical: 10,
+    paddingHorizontal: 10,
+    fontSize: 16,
+  },
+
+  buttonContainer: {
+    width: '45%',
+    
+    marginTop: 20,
+  },
+  button: {
+    width: '100%',
+    height: 50,
+    borderRadius: 35,
+    backgroundColor: '#3c009d',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginVertical: 10,
-    width: '80%',
+
+  buttonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
   },
   
+
 });
 
 export default styles;

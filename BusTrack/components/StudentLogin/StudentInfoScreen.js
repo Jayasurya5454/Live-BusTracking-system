@@ -1,65 +1,24 @@
-<<<<<<< HEAD
-import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const Stepper = () => {
-  const steps = ["Customer Info", "Shipping Info", "Payment", "Step 4"];
-  const [currentStep, setCurrentStep] = React.useState(1);
-  const [complete, setComplete] = React.useState(false);
-=======
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import firebase from 'firebase/app';
-import 'firebase/database';
->>>>>>> 6a73adb (added a nav)
-
-const Stepper = ({ steps, currentStep, complete }) => {
-  const handleNext = () => {
-    
-  };
-
-  return (
-    <View style={styles.stepperContainer}>
-      {steps.map((step, index) => (
-        <View key={index} style={[styles.stepItem, currentStep > index + 1 && styles.complete]}>
-          <View style={[styles.stepCircle, currentStep === index + 1 && styles.active]}>
-            {currentStep > index + 1 || complete ? (
-              <Text style={styles.stepText}>✓</Text>
-            ) : (
-              <Text style={styles.stepText}>{index + 1}</Text>
-            )}
-          </View>
-          <Text style={styles.stepLabel}>{step}</Text>
-        </View>
-      ))}
-      {!complete && (
-        <Button title={currentStep === steps.length ? "Finish" : "Next"} onPress={handleNext} />
-      )}
-    </View>
-  );
-};
-
-const StudentInfoScreen = ({ navigation }) => {
+const StudentInfoScreen = () => {
   const [studentData, setStudentData] = useState(null);
   const [showStudentData, setShowStudentData] = useState(false);
   const steps = ["Customer Info", "Shipping Info", "Payment", "Step 4"];
   const [currentStep, setCurrentStep] = useState(1);
   const [complete, setComplete] = useState(false);
 
-  useEffect(() => {
-    // Fetch data from Firebase
-    const fetchData = async () => {
-      try {
-        const snapshot = await firebase.database().ref('students').once('value');
-        const data = snapshot.val();
-        setStudentData(data);
-      } catch (error) {
-        console.error('Error fetching data from Firebase:', error);
-      }
-    };
+  const handleNext = () => {
+    setCurrentStep(currentStep + 1);
+  };
 
-    fetchData();
-  }, []);
+  const handlePrev = () => {
+    setCurrentStep(currentStep - 1);
+  };
+
+  const handleComplete = () => {
+    setComplete(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -72,10 +31,30 @@ const StudentInfoScreen = ({ navigation }) => {
       </View>
 
       {/* Stepper */}
-<<<<<<< HEAD
-      <Stepper />
-=======
-      <Stepper steps={steps} currentStep={currentStep} complete={complete} />
+      <View style={styles.stepperContainer}>
+        {steps.map((step, index) => (
+          <View key={index} style={[styles.stepItem, currentStep > index + 1 && styles.complete]}>
+            <View style={[styles.stepCircle, currentStep === index + 1 && styles.active]}>
+              {currentStep > index + 1 || complete ? (
+                <Text style={styles.stepText}>✓</Text>
+              ) : (
+                <Text style={styles.stepText}>{index + 1}</Text>
+              )}
+            </View>
+            <Text style={styles.stepLabel}>{step}</Text>
+          </View>
+        ))}
+        {!complete && (
+          <View style={styles.controls}>
+            <TouchableOpacity onPress={handlePrev} disabled={currentStep === 1}>
+              <Text style={[styles.controlButton, styles.prevButton]}>Previous</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleNext} disabled={currentStep === steps.length}>
+              <Text style={[styles.controlButton, styles.nextButton]}>Next</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
 
       {/* Student data */}
       {showStudentData && (
@@ -92,7 +71,6 @@ const StudentInfoScreen = ({ navigation }) => {
           )}
         </View>
       )}
->>>>>>> 6a73adb (added a nav)
     </View>
   );
 };
@@ -122,7 +100,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   stepItem: {
-    flexDirection: '',
+    flexDirection: 'row',
     alignItems: 'center',
   },
   stepCircle: {
@@ -147,8 +125,24 @@ const styles = StyleSheet.create({
   stepLabel: {
     marginTop: 5,
   },
-<<<<<<< HEAD
-=======
+  controls: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  controlButton: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    padding: 10,
+    borderRadius: 5,
+  },
+  prevButton: {
+    backgroundColor: '#ccc',
+  },
+  nextButton: {
+    backgroundColor: '#007BFF',
+    color: '#fff',
+  },
   studentDataContainer: {
     padding: 20,
     marginTop: 20,
@@ -160,7 +154,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 10,
   },
->>>>>>> 6a73adb (added a nav)
 });
 
 export default StudentInfoScreen;

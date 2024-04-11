@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 
 const Stepper = () => {
   const steps = ["Customer Info", "Shipping Info", "Payment", "Step 4"];
@@ -46,15 +46,6 @@ const StudentInfoScreen = ({ navigation }) => {
 
       {/* Stepper */}
       <Stepper />
-
-      {/* Form */}
-      <View style={styles.formContainer}>
-        <Text style={styles.formTitle}>Form</Text>
-        {/* Add your form components here */}
-        <TextInput placeholder="Name" style={styles.input} />
-        <TextInput placeholder="Email" style={styles.input} />
-        <Button title="Submit" onPress={() => console.log('Form submitted')} />
-      </View>
     </View>
   );
 };
@@ -74,12 +65,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   stepperContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
   },
   stepItem: {
+    flexDirection: '',
     alignItems: 'center',
   },
   stepCircle: {
@@ -103,17 +95,6 @@ const styles = StyleSheet.create({
   },
   stepLabel: {
     marginTop: 5,
-  },
-  formContainer: {
-    padding: 20,
-  },
-  formTitle: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  input: {
-    borderBottomWidth: 1,
-    marginBottom: 10,
   },
 });
 

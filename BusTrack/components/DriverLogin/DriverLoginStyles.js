@@ -1,74 +1,55 @@
-// AdminLoginStyles.js
+// DriverLoginStyles.js
 
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor:'#fff'
-    
+    backgroundColor: '#f5f5f5', // Background color for the entire screen
   },
-
   inputContainer: {
-    height: 500,
-    width:450,
-    borderWidth: 1,
-    borderColor: 'black',
-   justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    borderRadius: 5,
-    overflow: 'hidden', 
-    elevation: 10, // Use elevation to create a shadow effect
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-  },
-
-  title: {
-    fontSize: 38, 
-    fontWeight: 'bold', 
-    color:'#3c009d',
-    marginBottom: 60,
-
-  },
-
-  input: {
     width: '80%',
-    height: 60,
-    borderWidth: 1,
-    borderColor: 'gray',
-    marginVertical: 10,
-    paddingHorizontal: 10,
-    fontSize: 16,
+    backgroundColor: '#fff', // Background color for the input container
+    padding: 20,
+    borderRadius: 10,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#333',
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+  },
   buttonContainer: {
-    width: '45%',
-    
-    marginTop: 20,
+    alignItems: 'center',
   },
   button: {
-    width: '100%',
-    height: 50,
-    borderRadius: 35,
-    backgroundColor: '#3c009d',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#007bff',
+    paddingVertical: 12,
+    borderRadius: 5,
+    width: '50%',
   },
-
   buttonText: {
-    fontSize: 20,
+    color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
-    color: 'white',
     textAlign: 'center',
   },
-  
-
 });
-
 
 export default styles;

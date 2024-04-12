@@ -1,51 +1,47 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+// StudentInfoScreen.js
 
-const Stepper = () => {
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faUser, faBus } from '@fortawesome/free-solid-svg-icons'; // Importing the bus icon
+import { useNavigation } from '@react-navigation/native'; // Importing navigation hook
+
+const StudentInfoScreen = () => {
+  const [studentData, setStudentData] = useState(null);
+  const [showStudentData, setShowStudentData] = useState(false);
   const steps = ["Customer Info", "Shipping Info", "Payment", "Step 4"];
-  const [currentStep, setCurrentStep] = React.useState(1);
-  const [complete, setComplete] = React.useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [complete, setComplete] = useState(false);
+  const navigation = useNavigation(); // Initialize navigation
 
   const handleNext = () => {
-    if (currentStep === steps.length) {
-      setComplete(true);
-    } else {
-      setCurrentStep(prevStep => prevStep + 1);
-    }
+    setCurrentStep(currentStep + 1);
   };
 
-  return (
-    <View style={styles.stepperContainer}>
-      {steps.map((step, index) => (
-        <View key={index} style={[styles.stepItem, currentStep > index + 1 && styles.complete]}>
-          <View style={[styles.stepCircle, currentStep === index + 1 && styles.active]}>
-            {currentStep > index + 1 || complete ? (
-              <Text style={styles.stepText}>✓</Text>
-            ) : (
-              <Text style={styles.stepText}>{index + 1}</Text>
-            )}
-          </View>
-          <Text style={styles.stepLabel}>{step}</Text>
-        </View>
-      ))}
-      {!complete && (
-        <Button title={currentStep === steps.length ? "Finish" : "Next"} onPress={handleNext} />
-      )}
-    </View>
-  );
-};
+  const handlePrev = () => {
+    setCurrentStep(currentStep - 1);
+  };
 
-const StudentInfoScreen = ({ navigation }) => {
+  const handleComplete = () => {
+    setComplete(true);
+  };
+
   return (
     <View style={styles.container}>
       {/* Navigation bar */}
       <View style={styles.navBar}>
-        <Text style={styles.navText}>Navigation Bar</Text>
-        <Button title="Back" onPress={() => navigation.goBack()} />
+        <TouchableOpacity onPress={() => setShowStudentData(!showStudentData)}>
+          <FontAwesomeIcon icon={faUser} style={styles.navIcon} />
+        </TouchableOpacity>
+        {/* Button to navigate to BusViewPage */}
+        <TouchableOpacity onPress={() => navigation.navigate('BusView')}>
+          <FontAwesomeIcon icon={faBus} style={styles.navIcon} />
+        </TouchableOpacity>
       </View>
 
-      {/* Stepper */}
-      <Stepper />
+      {/* Rest of the code remains the same */}
+      {/* Stepper, Student data etc. */}
+
     </View>
   );
 };
@@ -64,6 +60,11 @@ const styles = StyleSheet.create({
   navText: {
     fontSize: 20,
   },
+  navIcon: {
+    fontSize: 16,
+    color: '#007BFF',
+    marginLeft: 10, // Add some margin between icons
+  },
   stepperContainer: {
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   stepItem: {
-    flexDirection: '',
+    flexDirection: 'row',
     alignItems: 'center',
   },
   stepCircle: {
@@ -95,6 +96,35 @@ const styles = StyleSheet.create({
   },
   stepLabel: {
     marginTop: 5,
+  },
+  controls: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  controlButton: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    padding: 10,
+    borderRadius: 5,
+  },
+  prevButton: {
+    backgroundColor: '#ccc',
+  },
+  nextButton: {
+    backgroundColor: '#007BFF',
+    color: '#fff',
+  },
+  studentDataContainer: {
+    padding: 20,
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  studentDataTitle: {
+    fontSize: 18,
+    marginBottom: 10,
   },
 });
 

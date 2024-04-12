@@ -1,3 +1,5 @@
+// App.js
+
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -9,6 +11,7 @@ import AdminDashboard from './components/Admin/AdminDashboard/AdminDashboard';
 import AddRecordForm from './components/Admin/AddRecordForm/AddRecordForm';
 import FacultyLogin from './components/FacultyLogin/FacultyLogin';
 import StudentInfoScreen from './components/StudentLogin/StudentInfoScreen';
+import BusViewPage from './components/Admin/BusViewPage/BusViewPage';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +27,7 @@ const App = () => {
         <Stack.Screen name="AddRecord" component={AddRecordForm} />
         <Stack.Screen name="Faculty" component={FacultyLogin} />
         <Stack.Screen name="StudentInfoScreen" component={StudentInfoScreen} />
+        <Stack.Screen name="BusView" component={BusViewPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

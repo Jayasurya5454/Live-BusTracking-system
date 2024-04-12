@@ -5,23 +5,23 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'lightgray',
+    backgroundColor: '#fff',
   },
   card: {
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 100,
+    backgroundColor: '#007BFF',
     borderRadius: 10,
-    margin: 10,
-    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffc107', // Adjust colors as needed
+    justifyContent: 'center',
+    marginVertical: 10,
   },
   cardText: {
-    fontSize: 20,
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

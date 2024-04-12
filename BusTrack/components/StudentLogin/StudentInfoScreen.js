@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 const StudentInfoScreen = () => {
   const [studentData, setStudentData] = useState(null);
@@ -24,9 +26,9 @@ const StudentInfoScreen = () => {
     <View style={styles.container}>
       {/* Navigation bar */}
       <View style={styles.navBar}>
-        <Text style={styles.navText}>Navigation Bar</Text>
         <TouchableOpacity onPress={() => setShowStudentData(!showStudentData)}>
-          <Text style={styles.navIcon}>Show Student Data</Text>
+          {/* Replacing text with icon */}
+          <FontAwesomeIcon icon={faUser} style={styles.navIcon} />
         </TouchableOpacity>
       </View>
 

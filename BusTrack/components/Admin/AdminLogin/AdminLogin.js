@@ -1,5 +1,3 @@
-// AdminLogin.js
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +12,8 @@ const AdminLogin = () => {
   const handleLogin = () => {
     if (name.trim() === '' || password.trim() === '') {
       Alert.alert('Error', 'Please enter both name and password');
+    } else if (name.trim() !== 'jayasurya' || password.trim() !== 'kec') {
+      Alert.alert('Error', 'Invalid name or password');
     } else {
       // Implement your login logic here
       console.log('Admin login button pressed');
@@ -25,7 +25,7 @@ const AdminLogin = () => {
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
-        <Text style={styles.title} >Admin Login</Text>
+        <Text style={styles.title}>Admin Login</Text>
         <TextInput 
           placeholder="Enter Name" 
           style={styles.input} 

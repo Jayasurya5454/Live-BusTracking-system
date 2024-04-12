@@ -14,10 +14,13 @@ const AddRecordForm = ({ navigation }) => {
   const [isSubmitted, setIsSubmitted] = useState(false); // Track submission status
 
   const handleAddRecord = () => {
-    if (!name || !rollNumber || !parentsName || !busNumber || !stopName || !parentsPhoneNumber || !email) {
+    if (!name.trim() || !rollNumber.trim() || !parentsName.trim() || !busNumber.trim() || !stopName.trim() || !parentsPhoneNumber.trim() || !email.trim()) {
       Alert.alert('Error', 'All fields are mandatory');
+    } else if (!/^\d{10}$/.test(parentsPhoneNumber.trim())) {
+      Alert.alert('Error', 'Please enter a valid 10-digit phone number for Parent\'s Phone Number');
+    } else if (!/\S+@\S+\.\S+/.test(email.trim())) {
+      Alert.alert('Error', 'Please enter a valid email address');
     } else {
-      
       const recordData = {
         name,
         rollNumber,
@@ -35,6 +38,13 @@ const AddRecordForm = ({ navigation }) => {
       setIsSubmitted(true);
       setTimeout(() => {
         setIsSubmitted(false);
+        setName('');
+        setRollNumber('');
+        setParentsName('');
+        setBusNumber('');
+        setStopName('');
+        setParentsPhoneNumber('');
+        setEmail('');
         navigation.goBack();
       }, 3000);
     }

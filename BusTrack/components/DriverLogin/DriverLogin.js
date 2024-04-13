@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 import styles from './DriverLoginStyles';
 
 const DriverLogin = () => {
+  const navigation = useNavigation(); // Initialize navigation
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
@@ -11,7 +13,8 @@ const DriverLogin = () => {
     console.log('Driver login button pressed');
     console.log('Name:', name);
     console.log('Password:', password);
-    // Add navigation logic if needed
+    // Navigate to BusViewPage
+    navigation.navigate('BusView');
   };
 
   return (

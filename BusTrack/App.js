@@ -12,6 +12,7 @@ import AddRecordForm from './components/Admin/AddRecordForm/AddRecordForm';
 import FacultyLogin from './components/FacultyLogin/FacultyLogin';
 import StudentInfoScreen from './components/StudentLogin/StudentInfoScreen';
 import BusViewPage from './components/Admin/BusViewPage/BusViewPage';
+import FacultyInfoScreen from './components/FacultyLogin/FacultyInfoScreen'
 
 const Stack = createStackNavigator();
 
@@ -29,7 +30,8 @@ const App = () => {
         <Stack.Screen name="Faculty" component={FacultyLogin} />
         <Stack.Screen name="StudentInfoScreen" component={StudentInfoScreen} />
         <Stack.Screen name="BusView" component={BusViewPage} />
-      </Stack.Navigator>
+        <Stack.Screen name="FacultyInfo" component={FacultyInfoScreen} /> 
+             </Stack.Navigator>
     </NavigationContainer>
   );
 };

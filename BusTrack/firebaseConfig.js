@@ -1,18 +1,23 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
+// firebaseConfig.js
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import "firebase/database"; 
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDg3Jnx_UarEYP_iHNBMNJObRWxiFeIQVk",
+  authDomain: "my-project-1f5d8.firebaseapp.com",
+  databaseURL: "https://my-project-1f5d8-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "my-project-1f5d8",
+  storageBucket: "my-project-1f5d8.appspot.com",
+  messagingSenderId: "654136579877",
+  appId: "1:654136579877:web:06874258a82a391826eccc",
+  measurementId: "G-KJDNB2W266"
 };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-export default firebase;
+
+// Export the initialized Firebase app and analytics instance
+export { app};

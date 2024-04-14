@@ -45,9 +45,11 @@ const FacultyLogin = () => {
           style={styles.input} 
           onChangeText={text => setPassword(text)} 
         />
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </Animated.View>
   );

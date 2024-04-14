@@ -1,4 +1,4 @@
-// StudentInfoScreen.js
+// FacultyInfoScreen.js
 
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
@@ -6,9 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser, faBus } from '@fortawesome/free-solid-svg-icons'; 
 import { useNavigation } from '@react-navigation/native'; 
 
-const StudentInfoScreen = () => {
-  const [studentData, setStudentData] = useState(null);
-  const [showStudentData, setShowStudentData] = useState(false);
+const FacultyInfoScreen = () => {
+  const [facultyData, setFacultyData] = useState(null);
+  const [showFacultyData, setShowFacultyData] = useState(false);
   const steps = ["Customer Info", "Shipping Info", "Payment", "Step 4"];
   const [currentStep, setCurrentStep] = useState(1);
   const [complete, setComplete] = useState(false);
@@ -30,7 +30,7 @@ const StudentInfoScreen = () => {
     <View style={styles.container}>
       {/* Navigation bar */}
       <View style={styles.navBar}>
-        <TouchableOpacity onPress={() => setShowStudentData(!showStudentData)}>
+        <TouchableOpacity onPress={() => setShowFacultyData(!showFacultyData)}>
           <FontAwesomeIcon icon={faUser} style={styles.navIcon} />
         </TouchableOpacity>
         {/* Button to navigate to BusViewPage */}
@@ -40,7 +40,7 @@ const StudentInfoScreen = () => {
       </View>
 
       {/* Rest of the code remains the same */}
-      {/* Stepper, Student data etc. */}
+      {/* Stepper, Faculty data etc. */}
 
     </View>
   );
@@ -115,17 +115,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
     color: '#fff',
   },
-  studentDataContainer: {
+  facultyDataContainer: {
     padding: 20,
     marginTop: 20,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
   },
-  studentDataTitle: {
+  facultyDataTitle: {
     fontSize: 18,
     marginBottom: 10,
   },
 });
 
-export default StudentInfoScreen;
+export default FacultyInfoScreen;

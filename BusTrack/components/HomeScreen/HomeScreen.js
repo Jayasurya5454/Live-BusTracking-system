@@ -1,32 +1,35 @@
-// HomeScreen.js
-
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image  } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5'; // Import FontAwesome icons
+
 
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* Container for "Track Live Bus" */}
       <TouchableOpacity style={styles.liveBusContainer} onPress={() => navigation.navigate('TrackBusLive')}>
-        {/* <Image source={require('../../../assets/location.png')} style={styles.icon} /> */}
         <Text style={styles.liveBusText}>Track Live Bus</Text>
       </TouchableOpacity>
 
       {/* Cards for different user types */}
-      <TouchableOpacity style={[styles.card, styles.studentTeacherCard]} onPress={() => navigation.navigate('Student')}>
-        <Text style={styles.cardText}>Student</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity style={[styles.card, styles.driverCard]} onPress={() => navigation.navigate('Driver')}>
-        <Text style={styles.cardText}>Driver</Text>
-      </TouchableOpacity>
-      
       <TouchableOpacity style={[styles.card, styles.adminCard]} onPress={() => navigation.navigate('Admin')}>
+      <Text><Icon name="user-cog" size={50} color="#fff" style={styles.cardIcon} /> {/* Admin Icon */}</Text>
         <Text style={styles.cardText}>Admin</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.card, styles.facultyCard]} onPress={() => navigation.navigate('Faculty')}>
+       <TouchableOpacity style={[styles.card, styles.facultyCard]} onPress={() => navigation.navigate('Faculty')}>
+      <Text><Icon name="user-graduate" size={50} color="#fff" style={styles.cardIcon} /> {/* Faculty Icon */}</Text>
         <Text style={styles.cardText}>Faculty</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity style={[styles.card, styles.studentTeacherCard]} onPress={() => navigation.navigate('Student')}>
+        <Text><Icon name="graduation-cap" size={50} color="#fff" style={styles.cardIcon} /> {/* Student Icon */}</Text>
+        <Text style={styles.cardText}>Student</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.card, styles.driverCard]} onPress={() => navigation.navigate('Driver')}>
+      <Text><Icon name="bus" size={50} color="#fff" style={styles.cardIcon} /> {/* Driver Icon */}</Text>
+        <Text style={styles.cardText}>Driver</Text>
       </TouchableOpacity>
     </View>
   );
@@ -35,12 +38,11 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'lightgray',
-    position: 'relative', // To allow absolute positioning
+    position: 'relative',
   },
   liveBusContainer: {
     position: 'absolute',
@@ -49,33 +51,41 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.8)',
     borderRadius: 10,
     padding: 10,
+    marginRight: 10,
   },
   liveBusText: {
     fontSize: 16,
     fontWeight: 'bold',
   },
   card: {
-    width: 150,
-    height: 150,
+    flexDirection: 'row',
+    width: 340,
+    height: 130,
     borderRadius: 10,
-    margin: 10,
-    justifyContent: 'center',
+    marginBottom: 10,
+    justifyContent: 'space-around',
     alignItems: 'center',
+    paddingRight: 80,
+  },
+  cardIcon: {
+    marginRight: 20,
   },
   cardText: {
-    fontSize: 20,
+    fontSize: 25,
+    color: '#fff',
   },
   studentTeacherCard: {
-    backgroundColor: '#ffc107',
+    backgroundColor: '#26A69A',
   },
   driverCard: {
-    backgroundColor: '#4caf50',
+    backgroundColor: '#E57373',
   },
   adminCard: {
-    backgroundColor: '#2196f3',
+    backgroundColor: '#2596be',
   },
   facultyCard: {
-    backgroundColor: '#219640',
+    backgroundColor: '#6d8b8f',
+
   },
 });
 

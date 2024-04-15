@@ -19,7 +19,7 @@ const Stack = createStackNavigator();
 
 const App = () => {
   useEffect(() => {
-    console.log("Firebase initialized successfully:", app);
+    console.log("Firebase initialized successfully");
   }, []);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        {/* Define screens */}
+
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Student" component={StudentLogin} />
         <Stack.Screen name="Driver" component={DriverLogin} />

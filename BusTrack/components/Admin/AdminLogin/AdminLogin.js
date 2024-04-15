@@ -12,7 +12,7 @@ const AdminLogin = () => {
   const handleLogin = () => {
     if (name.trim() === '' || password.trim() === '') {
       Alert.alert('Error', 'Please enter both name and password');
-    } else if (name.trim() !== 'jayasurya' || password.trim() !== 'kec') {
+    } else if (name.trim() !== 'Admin' || password.trim() !== 'kec') {
       Alert.alert('Error', 'Invalid name or password');
     } else {
       // Implement your login logic here

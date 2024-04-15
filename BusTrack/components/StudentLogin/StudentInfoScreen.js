@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Button, Animated } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser, faBus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -11,8 +11,8 @@ import { db } from '../../firebaseConfig';
 const INITIAL_REGION = {
   latitude: 11.341036,
   longitude: 77.717163,
-  latitudeDelta: 2,
-  longitudeDelta: 2
+  latitudeDelta: 0.05, // Adjust this value to change the zoom level
+  longitudeDelta: 0.05 // Adjust this value to change the zoom level
 };
 
 const busStops = [
@@ -22,7 +22,6 @@ const busStops = [
   { name: 'KEC', latitude: 11.2742, longitude: 77.6070 }
 ];
 
-const intervalDuration = 5000; // Interval duration in milliseconds
 const locations = ['Erode', 'Thindal', 'Perundurai', 'KEC'];
 
 const attributeNames = {
@@ -34,6 +33,8 @@ const attributeNames = {
   phone_no: 'Phone Number',
   rollno: 'Roll Number'
 };
+
+const STOP_DURATION = 3000; // Duration to stop at each bus stop (in milliseconds)
 
 const StudentInfoScreen = () => {
   const navigation = useNavigation();
@@ -50,11 +51,17 @@ const StudentInfoScreen = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setBusPositionIndex(prevIndex => (prevIndex + 1) % locations.length);
-    }, intervalDuration);
+      // If the bus is not at the last stop, move to the next stop
+      if (busPositionIndex < locations.length - 1) {
+        setBusPositionIndex(prevIndex => prevIndex + 1);
+      } else {
+        // If the bus reaches the last stop, reset to the first stop
+        setBusPositionIndex(0);
+      }
+    }, STOP_DURATION); // You can adjust the interval duration here
 
     return () => clearInterval(interval);
-  }, []);
+  }, [busPositionIndex]);
 
   useEffect(() => {
     Animated.timing(fadeInAnim, {
@@ -117,11 +124,12 @@ const StudentInfoScreen = () => {
           <FontAwesomeIcon icon={faBus} style={styles.navIcon} />
         </TouchableOpacity>
       </View>
-
-      <Button
-        title={isMapVisible ? 'Hide Map' : 'View Map'}
-        onPress={toggleMapVisibility}
-      />
+      <View style={styles.mapContainer}>
+        <Button
+          title={isMapVisible ? 'Hide Map' : 'View Map'}
+          onPress={toggleMapVisibility}
+        />
+      </View>
       {isMapVisible && (
         <MapView
           style={styles.map}
@@ -129,9 +137,15 @@ const StudentInfoScreen = () => {
           provider={PROVIDER_GOOGLE}
           ref={mapRef}
         >
+          <Polyline
+            coordinates={busStops.map(stop => ({ latitude: stop.latitude, longitude: stop.longitude }))}
+            strokeWidth={5}
+            strokeColor="blue"
+          />
           {busStops.map((stop, index) => (
             <Marker key={index} title={stop.name} coordinate={stop} pinColor={index === 0 ? 'blue' : 'red'} />
           ))}
+          {/* Display bus marker at the current bus stop */}
           <Marker
             title="Bus"
             coordinate={busStops[busPositionIndex]}
@@ -147,6 +161,17 @@ const StudentInfoScreen = () => {
           ))}
         </Animated.View>
       )}
+      <View style={styles.stepper}>
+        {locations.map((location, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[styles.step, index === busPositionIndex ? styles.activeStep : null]}
+            onPress={() => setBusPositionIndex(index)}
+          >
+            <Text style={styles.stepText}>{location}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 };
@@ -167,31 +192,31 @@ const styles = StyleSheet.create({
     color: '#007BFF',
     marginLeft: 10,
   },
+  mapContainer: {
+    marginBottom: 10,
+  },
   map: {
-    flex: 1,
     width: '100%',
     aspectRatio: 1,
+    height: 340,
+     // Adjust the height as needed
   },
   stepper: {
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    alignItems: 'bottom',
-    position: 'absolute',
-    right: 120,
-    bottom: 70,
-    backgroundColor: 'blue',
-    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginBottom: 10,
   },
   step: {
-    padding: 5,
+    padding: 15,
     borderRadius: 5,
-    marginVertical: 5,
+    backgroundColor: 'grey',
   },
   activeStep: {
-    backgroundColor: 'white',
+    backgroundColor: 'black',
   },
   stepText: {
-    color: 'black',
+    color: 'white',
   },
   userDataContainer: {
     position: 'absolute',
@@ -199,7 +224,7 @@ const styles = StyleSheet.create({
     left: 10,
     right: 10,
     backgroundColor: '#FCE5CD', // Light orange background color
-    padding: 20  ,
+    padding: 20,
     borderRadius: 10,
     borderWidth: 2,
     borderColor: '#F7965C', // Border color

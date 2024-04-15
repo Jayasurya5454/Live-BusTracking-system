@@ -12,12 +12,13 @@ import FacultyLogin from './components/FacultyLogin/FacultyLogin';
 import StudentInfoScreen from './components/StudentLogin/StudentInfoScreen';
 import BusViewPage from './components/Admin/BusViewPage/BusViewPage';
 import FacultyInfoScreen from './components/FacultyLogin/FacultyInfoScreen';
-
+import DriverDashboard from './components/DriverLogin/DriverDashboard'; 
+import ReportSubmit from './components/ReportSubmit/ReportSubmit'; // Import the ReportSubmit component
+ // Import the SubmitForm component
 
 const Stack = createStackNavigator();
 
 const App = () => {
-
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
@@ -32,6 +33,12 @@ const App = () => {
         <Stack.Screen name="StudentInfoScreen" component={StudentInfoScreen} />
         <Stack.Screen name="BusView" component={BusViewPage} />
         <Stack.Screen name="FacultyInfo" component={FacultyInfoScreen} /> 
+        <Stack.Screen name="DriverDashboard" component={DriverDashboard} />
+        <Stack.Screen name="ReportSubmit" component={ReportSubmit} />
+
+
+        {/* Add the ReportSubmit screen */}
+         
       </Stack.Navigator>
     </NavigationContainer>
   );

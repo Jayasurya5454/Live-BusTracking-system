@@ -2,7 +2,7 @@
 import firebase from 'firebase/app';
 import 'firebase/database'; // or 'firebase/firestore' if you're using Firestore
 
-const database = firebase.database(); // or firebase.firestore() if you're using Firestore
+const database = firebase.database(); 
 
 export const checkRollNumber = async (rollNumber) => {
   try {

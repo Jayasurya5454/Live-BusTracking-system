@@ -25,13 +25,15 @@ const busStops = [
 const locations = ['Erode', 'Thindal', 'Perundurai', 'KEC'];
 
 const attributeNames = {
+  name: 'Name',
+  rollno: 'Roll Number',
   bus_no: 'Bus Number',
   bus_stop: 'Bus Stop',
+  driver_name: 'Driver Name',
   mail: 'Email',
-  name: 'Name',
   parents_no: 'Parents Phone Number',
   phone_no: 'Phone Number',
-  rollno: 'Roll Number'
+  
 };
 
 const STOP_DURATION = 3000; // Duration to stop at each bus stop (in milliseconds)

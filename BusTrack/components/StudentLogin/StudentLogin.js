@@ -1,40 +1,53 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Animated } from 'react-native';
+// StudentLogin.js
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Animated, Alert } from 'react-native';
 import styles from './StudentLoginStyles';
 import { useNavigation } from '@react-navigation/native';
-import { checkRollNumber } from '../../backend/studentAuth';
-import { Alert } from 'react-native';
+import { ref, get } from 'firebase/database';
+import { db } from '../../firebaseConfig';
 
 const StudentLogin = () => {
   const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [rollNumber, setRollNumber] = useState('');
-  const [password, setPassword] = useState('');
+  const [busNumber, setBusNumber] = useState('');
 
   useEffect(() => {
     Animated.timing(
       fadeAnim,
       {
         toValue: 1,
-        duration: 1000, // Animation duration in milliseconds
-        useNativeDriver: true, // Enable native driver for performance
+        duration: 1000,
+        useNativeDriver: true,
       }
     ).start();
   }, [fadeAnim]);
 
   const handleLogin = () => {
-    // Implement your login logic here
-    if (checkRollNumber(rollNumber)) {
-      // If valid, navigate to the next screen
-      console.log('Student login button pressed');
-      console.log('Roll Number:', rollNumber);
-      console.log('Password:', password);
-      navigation.navigate('StudentInfoScreen');
-    } else {
-      // If invalid, show an error message or take appropriate action
-      console.log('Invalid roll number. Please try again.');
-      Alert.alert('Invalid Roll Number', 'Please enter a valid roll number.', [{ text: 'OK' }]);
-    }
+    const studentsRef = ref(db, 'students'); // Use ref function with databaseRef
+
+    get(studentsRef)
+      .then(snapshot => {
+        if (snapshot.exists()) {
+          // Data exists at the 'students' node
+          const data = snapshot.val();
+          const filteredStudents = Object.values(data).filter(student => student.rollno === rollNumber && student.busno === busNumber);
+          if (filteredStudents.length > 0) {
+            // Student with the provided roll number and bus number exists
+            console.log('Valid credentials. Proceeding to next page.');
+            navigation.navigate('StudentInfoScreen');
+          } else {
+            // No student with the provided credentials exists
+            console.log('Invalid credentials. Please try again.');
+            Alert.alert('Invalid Credentials', 'Please enter valid roll number and bus number.', [{ text: 'OK' }]);
+          }
+        } else {
+          console.log('No data found at the "students" node.');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
   };
 
   return (
@@ -44,13 +57,12 @@ const StudentLogin = () => {
         <TextInput 
           placeholder="Enter Roll Number" 
           style={styles.input} 
-          onChangeText={text => setRollNumber(text)} // Store roll number input value in state
+          onChangeText={text => setRollNumber(text)} 
         />
         <TextInput 
-          placeholder="Enter Password" 
-          secureTextEntry={true} 
+          placeholder="Enter Bus Number" 
           style={styles.input} 
-          onChangeText={text => setPassword(text)} // Store password input value in state
+          onChangeText={text => setBusNumber(text)} 
         />
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
@@ -58,7 +70,6 @@ const StudentLogin = () => {
           </TouchableOpacity>
         </View>
       </View>
-
     </Animated.View>
   );
 };

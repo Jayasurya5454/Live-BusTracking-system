@@ -1,6 +1,6 @@
 // firebaseConfig.js
 import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
+import { getDatabase, ref } from "firebase/database"; // Import the ref function
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,10 +15,13 @@ const firebaseConfig = {
   measurementId: "G-KJDNB2W266"
 };
 
+
+
 const app = initializeApp(firebaseConfig);
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage)
 });
 const db = getDatabase(app);
+const databaseRef = ref(db); // Set ref to the database root
 
-export { app, auth, db };
+export { app, auth, db, databaseRef, ref }; // Export the ref function along with other Firebase objects

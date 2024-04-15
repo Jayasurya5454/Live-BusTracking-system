@@ -35,12 +35,18 @@ if (!firebase.apps.length) {
 }
 
 const App = () => {
+<<<<<<< HEAD
+=======
+  useEffect(() => {
+    console.log("Firebase initialized successfully");
+  }, []);
+>>>>>>> 87ffbacf41cc0262671f33e0320d9d914b3270c9
 
 
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        {/* Define screens */}
+
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Student" component={StudentLogin} />
         <Stack.Screen name="Driver" component={DriverLogin} />

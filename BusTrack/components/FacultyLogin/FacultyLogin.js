@@ -1,15 +1,15 @@
-// FacultyLogin.js
-
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Animated } from 'react-native';
-import styles from './FacultyLoginStyles';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Animated, Alert } from 'react-native';
+import styles from './FacultyLoginStyles'; // Assuming you have a separate style file for faculty login
 import { useNavigation } from '@react-navigation/native';
+import { ref, get } from 'firebase/database';
+import { db } from '../../firebaseConfig';
 
 const FacultyLogin = () => {
   const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [busNumber, setBusNumber] = useState('');
 
   useEffect(() => {
     Animated.timing(
@@ -23,11 +23,30 @@ const FacultyLogin = () => {
   }, [fadeAnim]);
 
   const handleLogin = () => {
-    // Implement your login logic here
-    console.log('Faculty login button pressed');
-    console.log('Email:', email);
-    console.log('Password:', password);
-    navigation.navigate('FacultyInfo'); // Navigate to FacultyInfoScreen
+    const facultiesRef = ref(db, 'staff');
+
+    get(facultiesRef)
+      .then(snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const filteredFaculties = Object.values(data).filter(faculty => faculty.name === name && faculty.bus_no === busNumber);
+          if (filteredFaculties.length > 0) {
+            // If a matching faculty is found, navigate to FacultyInfoScreen
+            console.log('Valid credentials. Proceeding to next page.');
+            Alert.alert('Login Successful', 'Welcome, faculty!', [{ text: 'OK' }]);
+            navigation.navigate('FacultyInfo');
+          } else {
+            // No matching faculty found, display error alert
+            console.log('Invalid credentials. Please try again.');
+            Alert.alert('Invalid Credentials', 'Please enter valid name and bus number.', [{ text: 'OK' }]);
+          }
+        } else {
+          console.log('No data found at the "faculties" node.');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
   };
 
   return (
@@ -35,15 +54,14 @@ const FacultyLogin = () => {
       <View style={styles.inputContainer}>
         <Text style={styles.title}>Faculty Login</Text>
         <TextInput 
-          placeholder="Enter Email ID" 
+          placeholder="Enter Name" 
           style={styles.input} 
-          onChangeText={text => setEmail(text)} 
+          onChangeText={text => setName(text)} 
         />
         <TextInput 
-          placeholder="Enter Password" 
-          secureTextEntry={true} 
+          placeholder="Enter Bus Number" 
           style={styles.input} 
-          onChangeText={text => setPassword(text)} 
+          onChangeText={text => setBusNumber(text)} 
         />
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleLogin}>

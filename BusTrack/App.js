@@ -1,5 +1,5 @@
 // App.js
-import React, { useEffect } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './components/HomeScreen/HomeScreen';
@@ -12,44 +12,11 @@ import FacultyLogin from './components/FacultyLogin/FacultyLogin';
 import StudentInfoScreen from './components/StudentLogin/StudentInfoScreen';
 import BusViewPage from './components/Admin/BusViewPage/BusViewPage';
 import FacultyInfoScreen from './components/FacultyLogin/FacultyInfoScreen';
-import { checkMultipleRollNumbers } from './studentutil' ; // Import the function to check multiple roll numbers
-import { app } from './firebaseConfig'; // Import Firebase configuration
-import { AppRegistry } from 'react-native';
+
+
 const Stack = createStackNavigator();
 
 const App = () => {
-  useEffect(() => {
-    console.log("Firebase initialized successfully:", app);
-  }, []);
-
-  useEffect(() => {
-    const rollNumbers = [
-      "22ALR004",
-      "22ALR010",
-      "22ALR017",
-      "22ALR020",
-      "22ALR021",
-      "22ALR026",
-      "22ALR031",
-      "22ALR036",
-      "22ALR037",
-      "22ALR043",
-      "22ALR045",
-      "22ALR050",
-      "22ALR052",
-      "22ALR053",
-      "22ALR080",
-      "22ALR083",
-      "22ALR112"
-    ];
-
-    const checkRollNumbers = async () => {
-      const results = await checkMultipleRollNumbers(rollNumbers);
-      console.log("Results:", results);
-    };
-
-    checkRollNumbers();
-  }, []);
 
   return (
     <NavigationContainer>

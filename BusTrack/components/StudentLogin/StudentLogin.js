@@ -1,31 +1,49 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Animated } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Animated, Alert } from 'react-native';
 import styles from './StudentLoginStyles';
 import { useNavigation } from '@react-navigation/native';
+import { ref, get } from 'firebase/database';
+import { db } from '../../firebaseConfig';
 
 const StudentLogin = () => {
   const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [rollNumber, setRollNumber] = useState('');
-  const [password, setPassword] = useState('');
+  const [busNumber, setBusNumber] = useState('');
 
   useEffect(() => {
     Animated.timing(
       fadeAnim,
       {
         toValue: 1,
-        duration: 1000, // Animation duration in milliseconds
-        useNativeDriver: true, // Enable native driver for performance
+        duration: 1000,
+        useNativeDriver: true,
       }
     ).start();
   }, [fadeAnim]);
 
   const handleLogin = () => {
-    // Implement your login logic here
-    console.log('Student login button pressed');
-    console.log('Roll Number:', rollNumber);
-    console.log('Password:', password);
-    navigation.navigate('StudentInfoScreen');
+    const studentsRef = ref(db, 'students');
+
+    get(studentsRef)
+      .then(snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const filteredStudents = Object.values(data).filter(student => student.rollno === rollNumber && student.bus_no === busNumber);
+          if (filteredStudents.length > 0) {
+            console.log('Valid credentials. Proceeding to next page.');
+            navigation.navigate('StudentInfoScreen', { rollNumber }); // Pass roll number to StudentInfoScreen
+          } else {
+            console.log('Invalid credentials. Please try again.');
+            Alert.alert('Invalid Credentials', 'Please enter valid roll number and bus number.', [{ text: 'OK' }]);
+          }
+        } else {
+          console.log('No data found at the "students" node.');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
   };
 
   return (
@@ -35,13 +53,12 @@ const StudentLogin = () => {
         <TextInput 
           placeholder="Enter Roll Number" 
           style={styles.input} 
-          onChangeText={text => setRollNumber(text)} // Store roll number input value in state
+          onChangeText={text => setRollNumber(text)} 
         />
         <TextInput 
-          placeholder="Enter Password" 
-          secureTextEntry={true} 
+          placeholder="Enter Bus Number" 
           style={styles.input} 
-          onChangeText={text => setPassword(text)} // Store password input value in state
+          onChangeText={text => setBusNumber(text)} 
         />
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
@@ -49,7 +66,6 @@ const StudentLogin = () => {
           </TouchableOpacity>
         </View>
       </View>
-
     </Animated.View>
   );
 };

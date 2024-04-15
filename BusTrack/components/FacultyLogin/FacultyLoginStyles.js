@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5', // Background color for the entire screen
+    backgroundColor: 'lightgray', // Background color for the entire screen
   },
   inputContainer: {
     width: '80%',
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#3c009d', // Changed color for the title
+    color: '#004080',
   },
   input: {
     height: 40,
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#2596be',
     paddingVertical: 12,
     borderRadius: 25, // Changed border radius for the button
     width: '50%', // Adjusted width for the button

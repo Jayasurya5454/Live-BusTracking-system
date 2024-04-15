@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Animated } from 'react-native';
 import styles from './StudentLoginStyles';
 import { useNavigation } from '@react-navigation/native';
+import { checkRollNumber } from '../../backend/studentAuth';
+import { Alert } from 'react-native';
 
 const StudentLogin = () => {
   const navigation = useNavigation();
@@ -22,10 +24,17 @@ const StudentLogin = () => {
 
   const handleLogin = () => {
     // Implement your login logic here
-    console.log('Student login button pressed');
-    console.log('Roll Number:', rollNumber);
-    console.log('Password:', password);
-    navigation.navigate('StudentInfoScreen');
+    if (checkRollNumber(rollNumber)) {
+      // If valid, navigate to the next screen
+      console.log('Student login button pressed');
+      console.log('Roll Number:', rollNumber);
+      console.log('Password:', password);
+      navigation.navigate('StudentInfoScreen');
+    } else {
+      // If invalid, show an error message or take appropriate action
+      console.log('Invalid roll number. Please try again.');
+      Alert.alert('Invalid Roll Number', 'Please enter a valid roll number.', [{ text: 'OK' }]);
+    }
   };
 
   return (

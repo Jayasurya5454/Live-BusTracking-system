@@ -23,11 +23,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-<<<<<<< HEAD
     color: '#004080',
-=======
-    color: '#3c009d', // Changed color for the title
->>>>>>> ba38b56bee576b26047aa0c37eba6a1fd269b397
   },
   input: {
     height: 40,

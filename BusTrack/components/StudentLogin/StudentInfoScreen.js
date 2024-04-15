@@ -83,13 +83,15 @@ const StudentInfoScreen = () => {
           </Marker>
         </MapView>
       )}
-      <View style={styles.stepper}>
-        {locations.map((location, index) => (
-          <View key={index} style={[styles.step, index === busPositionIndex ? styles.activeStep : null]}>
-            <Text style={styles.stepText}>{location}</Text>
-          </View>
-        ))}
-      </View>
+      {isMapVisible && ( // Check if map is visible before rendering the stepper
+        <View style={styles.stepper}>
+          {locations.map((location, index) => (
+            <View key={index} style={[styles.step, index === busPositionIndex ? styles.activeStep : null]}>
+              <Text style={styles.stepText}>{location}</Text>
+            </View>
+          ))}
+        </View>
+      )}
     </View>
   );
 };

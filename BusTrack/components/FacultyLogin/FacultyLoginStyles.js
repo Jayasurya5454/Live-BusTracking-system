@@ -1,5 +1,3 @@
-// DriverLoginStyles.js
-
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -25,7 +23,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+<<<<<<< HEAD
     color: '#004080',
+=======
+    color: '#3c009d', // Changed color for the title
+>>>>>>> ba38b56bee576b26047aa0c37eba6a1fd269b397
   },
   input: {
     height: 40,
@@ -42,14 +44,31 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#2596be',
     paddingVertical: 12,
-    borderRadius: 25,
-    width: '50%',
+    borderRadius: 25, // Changed border radius for the button
+    width: '50%', // Adjusted width for the button
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  additionalUIContainer: {
+    marginTop: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  additionalUIText: {
+    marginRight: 5,
+    color: '#3c009d', // Changed color for additional UI text
+  },
+  signupButton: {
+    padding: 5,
+  },
+  signupButtonText: {
+    color: '#007bff',
+    fontWeight: 'bold',
   },
 });
 

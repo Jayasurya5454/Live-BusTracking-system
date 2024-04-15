@@ -50,13 +50,6 @@ const StudentLogin = () => {
         </View>
       </View>
 
-      {/* Additional custom UI */}
-      <View style={styles.additionalUIContainer}>
-        <Text style={styles.additionalUIText}>Don't have an account?</Text>
-        <TouchableOpacity style={styles.signupButton}>
-          <Text style={styles.signupButtonText}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
     </Animated.View>
   );
 };

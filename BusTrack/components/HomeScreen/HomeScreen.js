@@ -6,10 +6,6 @@ import Icon from 'react-native-vector-icons/FontAwesome5'; // Import FontAwesome
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      {/* Container for "Track Live Bus" */}
-      <TouchableOpacity style={styles.liveBusContainer} onPress={() => navigation.navigate('TrackBusLive')}>
-        <Text style={styles.liveBusText}>Track Live Bus</Text>
-      </TouchableOpacity>
 
       {/* Cards for different user types */}
       <TouchableOpacity style={[styles.card, styles.adminCard]} onPress={() => navigation.navigate('Admin')}>

@@ -31,7 +31,7 @@ const StudentLogin = () => {
         if (snapshot.exists()) {
           // Data exists at the 'students' node
           const data = snapshot.val();
-          const filteredStudents = Object.values(data).filter(student => student.rollno === rollNumber && student.busno === busNumber);
+          const filteredStudents = Object.values(data).filter(student => student.rollno === rollNumber && student.bus_no === busNumber);
           if (filteredStudents.length > 0) {
             // Student with the provided roll number and bus number exists
             console.log('Valid credentials. Proceeding to next page.');

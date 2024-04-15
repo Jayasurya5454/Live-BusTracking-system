@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, Button } from 'react-native';
 
 interface StudentInfoScreenProps {
   busPosition: {
@@ -26,6 +26,11 @@ const busStops = [
 
 const StudentInfoScreen: React.FC<StudentInfoScreenProps> = ({ busPosition }) => {
   const mapRef = useRef<MapView>(null);
+  const [isMapVisible, setIsMapVisible] = useState(true);
+
+  const toggleMapVisibility = () => {
+    setIsMapVisible(!isMapVisible);
+  };
 
   useEffect(() => {
     // Your useEffect logic here
@@ -33,25 +38,31 @@ const StudentInfoScreen: React.FC<StudentInfoScreenProps> = ({ busPosition }) =>
 
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        initialRegion={INITIAL_REGION}
-        provider={PROVIDER_GOOGLE}
-        ref={mapRef}
-      >
-        {busStops.map((stop, index) => (
-          <Marker key={index} title={stop.name} coordinate={stop} pinColor={index === 0 ? 'blue' : 'red'} />
-        ))}
-        <Marker
-          title="Bus"
-          coordinate={busPosition}
+      <Button
+        title={isMapVisible ? 'Hide Map' : 'Show Map'}
+        onPress={toggleMapVisibility}
+      />
+      {isMapVisible && (
+        <MapView
+          style={styles.map}
+          initialRegion={INITIAL_REGION}
+          provider={PROVIDER_GOOGLE}
+          ref={mapRef}
         >
-          <Image
-            source={require('../../mapApp/assets/images/bus.png')}
-            style={{ width: 30, height: 30 }} // Adjust the width and height as needed
-          />
-        </Marker>
-      </MapView>
+          {busStops.map((stop, index) => (
+            <Marker key={index} title={stop.name} coordinate={stop} pinColor={index === 0 ? 'blue' : 'red'} />
+          ))}
+          <Marker
+            title="Bus"
+            coordinate={busPosition}
+          >
+            <Image
+              source={require('../../mapApp/assets/images/bus.png')}
+              style={{ width: 30, height: 30 }} // Adjust the width and height as needed
+            />
+          </Marker>
+        </MapView>
+      )}
     </View>
   );
 };

@@ -33,7 +33,6 @@ const DriverLogin = () => {
           if (filteredDrivers.length > 0) {
             // If a matching driver is found, navigate to DriverInfoScreen
             console.log('Valid credentials. Proceeding to next page.');
-           
             navigation.navigate('BusView');
            
           } else {

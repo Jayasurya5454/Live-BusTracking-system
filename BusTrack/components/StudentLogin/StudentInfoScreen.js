@@ -20,7 +20,7 @@ const busStops = [
   { name: 'KEC', latitude: 11.2742, longitude: 77.6070 }
 ];
 
-const intervalDuration = 5000; // Interval duration in milliseconds
+const intervalDuration = 20000; // Interval duration in milliseconds
 const locations = ['Erode', 'Thindal', 'Perundurai', 'KEC'];
 
 const StudentInfoScreen = () => {
@@ -39,6 +39,18 @@ const StudentInfoScreen = () => {
 
   const toggleMapVisibility = () => {
     setIsMapVisible(!isMapVisible);
+
+    // If the map is becoming visible, zoom to the bus location
+    if (!isMapVisible) {
+      const busLocation = busStops[busPositionIndex];
+      const region = {
+        latitude: busLocation.latitude,
+        longitude: busLocation.longitude,
+        latitudeDelta: 0.10, // Adjust the zoom level as needed
+        longitudeDelta: 0., // Adjust the zoom level as needed
+      };
+      mapRef.current.animateToRegion(region, 1000); // 1000 milliseconds for animation duration
+    }
   };
 
   const toggleStudentDataVisibility = () => {
@@ -113,9 +125,9 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   map: {
-    flex: 1,
     width: '100%',
     aspectRatio: 1,
+    height: 350, // Initial height of the map
   },
   stepper: {
     flexDirection: 'column',
@@ -123,8 +135,8 @@ const styles = StyleSheet.create({
     alignItems: 'bottom',
     position: 'absolute',
     right: 120,
-    bottom: 70,
-    backgroundColor: 'blue',
+    bottom: 60,
+    backgroundColor: 'grey',
     padding: 10,
   },
   step: {

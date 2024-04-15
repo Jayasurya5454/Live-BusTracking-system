@@ -14,7 +14,7 @@ import BusViewPage from './components/Admin/BusViewPage/BusViewPage';
 import FacultyInfoScreen from './components/FacultyLogin/FacultyInfoScreen';
 import { checkMultipleRollNumbers } from './studentutil' ; // Import the function to check multiple roll numbers
 import { app } from './firebaseConfig'; // Import Firebase configuration
-
+import { AppRegistry } from 'react-native';
 const Stack = createStackNavigator();
 
 const App = () => {

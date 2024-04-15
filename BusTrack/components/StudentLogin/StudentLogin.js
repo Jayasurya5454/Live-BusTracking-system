@@ -1,4 +1,3 @@
-// StudentLogin.js
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Animated, Alert } from 'react-native';
 import styles from './StudentLoginStyles';
@@ -24,20 +23,17 @@ const StudentLogin = () => {
   }, [fadeAnim]);
 
   const handleLogin = () => {
-    const studentsRef = ref(db, 'students'); // Use ref function with databaseRef
+    const studentsRef = ref(db, 'students');
 
     get(studentsRef)
       .then(snapshot => {
         if (snapshot.exists()) {
-          // Data exists at the 'students' node
           const data = snapshot.val();
-          const filteredStudents = Object.values(data).filter(student => student.rollno === rollNumber && student.busno === busNumber);
+          const filteredStudents = Object.values(data).filter(student => student.rollno === rollNumber && student.bus_no === busNumber);
           if (filteredStudents.length > 0) {
-            // Student with the provided roll number and bus number exists
             console.log('Valid credentials. Proceeding to next page.');
-            navigation.navigate('StudentInfoScreen');
+            navigation.navigate('StudentInfoScreen', { rollNumber }); // Pass roll number to StudentInfoScreen
           } else {
-            // No student with the provided credentials exists
             console.log('Invalid credentials. Please try again.');
             Alert.alert('Invalid Credentials', 'Please enter valid roll number and bus number.', [{ text: 'OK' }]);
           }

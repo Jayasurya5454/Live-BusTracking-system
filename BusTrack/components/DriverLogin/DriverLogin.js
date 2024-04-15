@@ -31,13 +31,9 @@ const DriverLogin = () => {
           const data = snapshot.val();
           const filteredDrivers = Object.values(data).filter(driver => driver.driver_name === name && driver.bus_no === busNumber);
           if (filteredDrivers.length > 0) {
-            // If a matching driver is found, navigate to DriverInfoScreen
             console.log('Valid credentials. Proceeding to next page.');
-           
-            navigation.navigate('BusView');
-           
+            navigation.navigate('DriverDashboard', { busNumber });
           } else {
-            // No matching driver found, display error alert
             console.log('Invalid credentials. Please try again.');
             Alert.alert('Invalid Credentials', 'Please enter valid name and bus number.', [{ text: 'OK' }]);
           }

@@ -26,9 +26,7 @@ const BusViewPage = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer} keyboardShouldPersistTaps="handled">
       <View style={styles.container}>
-        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('AdminDetails')}>
-          <FontAwesomeIcon icon={faUser} style={styles.navIcon} />
-        </TouchableOpacity>
+        
 
         <TextInput
           style={styles.searchBar}

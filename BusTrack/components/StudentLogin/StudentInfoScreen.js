@@ -34,8 +34,6 @@ const attributeNames = {
   rollno: 'Roll Number'
 };
 
-const STOP_DURATION = 3000; // Duration to stop at each bus stop (in milliseconds)
-
 const StudentInfoScreen = () => {
   const navigation = useNavigation();
   const mapRef = useRef(null);
@@ -43,25 +41,12 @@ const StudentInfoScreen = () => {
   const [isMapVisible, setIsMapVisible] = useState(true);
   const [showUserData, setShowUserData] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [busPosition, setBusPosition] = useState(busStops[0]);
   const route = useRoute();
   const { rollNumber } = route.params || {};
 
   const fadeInAnim = useRef(new Animated.Value(0)).current;
   const userDataAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // If the bus is not at the last stop, move to the next stop
-      if (busPositionIndex < locations.length - 1) {
-        setBusPositionIndex(prevIndex => prevIndex + 1);
-      } else {
-        // If the bus reaches the last stop, reset to the first stop
-        setBusPositionIndex(0);
-      }
-    }, STOP_DURATION); // You can adjust the interval duration here
-
-    return () => clearInterval(interval);
-  }, [busPositionIndex]);
 
   useEffect(() => {
     Animated.timing(fadeInAnim, {
@@ -114,6 +99,86 @@ const StudentInfoScreen = () => {
     setShowUserData(!showUserData);
   };
 
+  // Continuous movement of the bus
+  // Continuous movement of the bus
+useEffect(() => {
+  const interval = setInterval(() => {
+    // Check if the bus is at the final destination (KEC)
+    if (busPositionIndex === busStops.length - 1) {
+      clearInterval(interval); // Stop the interval
+      return;
+    }
+
+    // Calculate the next stop index
+    const nextStopIndex = busPositionIndex + 1;
+
+    // Calculate the distance between current and next stop
+    const distance = calculateDistance(
+      busStops[busPositionIndex].latitude,
+      busStops[busPositionIndex].longitude,
+      busStops[nextStopIndex].latitude,
+      busStops[nextStopIndex].longitude
+    );
+
+    // Calculate the number of steps based on distance
+    const numSteps = Math.ceil(distance / 100); // Adjust the step size as needed
+
+    // Calculate the step size for latitude and longitude
+    const stepLat = (busStops[nextStopIndex].latitude - busStops[busPositionIndex].latitude) / numSteps;
+    const stepLng = (busStops[nextStopIndex].longitude - busStops[busPositionIndex].longitude) / numSteps;
+
+    // Animate the bus marker to move along the polyline
+    let i = 0;
+    const animationInterval = setInterval(() => {
+      // Calculate the new position
+      const newPosition = {
+        latitude: busStops[busPositionIndex].latitude + i * stepLat,
+        longitude: busStops[busPositionIndex].longitude + i * stepLng
+      };
+
+      // Update the position of the bus marker
+      setBusPosition(newPosition);
+
+      // Increment the step counter
+      i++;
+
+      // Check if reached the next stop
+      if (i > numSteps) {
+        // Move to the next stop
+        setBusPositionIndex(nextStopIndex);
+
+        // Stop the animation
+        clearInterval(animationInterval);
+
+        // Call useEffect again to start animation for the next segment
+        setTimeout(() => {
+          setBusPositionIndex(nextStopIndex);
+        }, 3000); // Delay before moving to the next stop (in milliseconds)
+      }
+    }, 30); // Interval for smooth animation (in milliseconds)
+  }, 15000); // Interval for moving to the next stop (in milliseconds) including the wait time at each stop
+
+  return () => clearInterval(interval);
+}, [busPositionIndex]);
+
+
+  // Function to calculate the distance between two points using Haversine formula
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // Earth radius in meters
+    const φ1 = (lat1 * Math.PI) / 180; // Latitude of point 1 in radians
+    const φ2 = (lat2 * Math.PI) / 180; // Latitude of point 2 in radians
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180; // Difference in latitudes
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180; // Difference in longitudes
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const distance = R * c; // Distance in meters
+    return distance;
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.navBar}>
@@ -145,10 +210,10 @@ const StudentInfoScreen = () => {
           {busStops.map((stop, index) => (
             <Marker key={index} title={stop.name} coordinate={stop} pinColor={index === 0 ? 'blue' : 'red'} />
           ))}
-          {/* Display bus marker at the current bus stop */}
+          {/* Display bus marker at the current bus position */}
           <Marker
             title="Bus"
-            coordinate={busStops[busPositionIndex]}
+            coordinate={busPosition}
           >
             <FontAwesome5 name="bus" size={30} color="blue" />
           </Marker>
@@ -199,7 +264,7 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 1,
     height: 340,
-     // Adjust the height as needed
+    // Adjust the height as needed
   },
   stepper: {
     flexDirection: 'row',

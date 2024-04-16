@@ -32,7 +32,7 @@ const DriverLogin = () => {
           const filteredDrivers = Object.values(data).filter(driver => driver.driver_name === name && driver.bus_no === busNumber);
           if (filteredDrivers.length > 0) {
             console.log('Valid credentials. Proceeding to next page.');
-            navigation.navigate('DriverDashboard', { busNumber });
+            navigation.navigate('DriverDashboard', { busNumber,name});
           } else {
             console.log('Invalid credentials. Please try again.');
             Alert.alert('Invalid Credentials', 'Please enter valid name and bus number.', [{ text: 'OK' }]);
@@ -71,3 +71,4 @@ const DriverLogin = () => {
 };
 
 export default DriverLogin;
+

@@ -1,10 +1,13 @@
+// FacultyInfoScreen.js
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Button, Animated } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser, faBus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native'; // Import useRoute
+import { ref, get } from 'firebase/database';
+import { db } from '../../firebaseConfig';
 
 const INITIAL_REGION = {
   latitude: 11.341036,
@@ -20,14 +23,19 @@ const busStops = [
   { name: 'KEC', latitude: 11.2742, longitude: 77.6070 }
 ];
 
-const intervalDuration = 5000; // Interval duration in milliseconds
+const intervalDuration = 5000;
 const locations = ['Erode', 'Thindal', 'Perundurai', 'KEC'];
 
 const FacultyInfoScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute(); // Use useRoute to get route params
+  const { name } = route.params; // Get the name from route params
   const mapRef = useRef(null);
   const [busPositionIndex, setBusPositionIndex] = useState(0);
   const [isMapVisible, setIsMapVisible] = useState(true);
+  const [showUserData, setShowUserData] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const userDataAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -40,26 +48,73 @@ const FacultyInfoScreen = () => {
   const toggleMapVisibility = () => {
     setIsMapVisible(!isMapVisible);
   };
-
-  const toggleStudentDataVisibility = () => {
-    // Add your logic here for toggling student data visibility
+  
+  const toggleStaffDataVisibility = async () => {
+    // Check if userData is already fetched
+    if (!userData) {
+      // If not fetched, get a reference to the 'staff' node in the database
+      const staffRef = ref(db, 'staff');
+      
+      // Fetch data from the database
+      get(staffRef)
+        .then(snapshot => {
+          // Check if data exists at the 'staff' node
+          if (snapshot.exists()) {
+            // Convert snapshot to JSON format
+            const data = snapshot.val();
+            
+            // Filter staff members whose name matches the input name
+            const staffMembers = Object.values(data).filter(member => member.name === name);
+            
+            // Check if any staff member is found
+            if (staffMembers.length > 0) {
+              // Select the first staff member (assuming unique names)
+              const staffMember = staffMembers[0];
+              
+              // Process user data (if needed)
+              const processedUserData = {};
+              Object.entries(staffMember).forEach(([key, value]) => {
+                processedUserData[key] = value;
+              });
+              
+              // Set user data
+              setUserData(processedUserData);
+  
+              // Animate the user data (if needed)
+              Animated.timing(userDataAnim, {
+                toValue: 1,
+                duration: 1000,
+                useNativeDriver: true,
+              }).start();
+            } else {
+              // If no staff member found with the given name, log a message
+              console.log('Staff member not found');
+            }
+          } else {
+            // If no data found at the 'staff' node, log a message
+            console.log('No data found at the "staff" node.');
+          }
+        })
+        .catch(error => {
+          // Log any errors that occur during data fetching
+          console.error('Error fetching data:', error);
+        });
+    }
+  
+    // Toggle the visibility of user data
+    setShowUserData(!showUserData);
   };
-
+  
   return (
     <View style={styles.container}>
-      {/* Navigation bar */}
       <View style={styles.navBar}>
-        <TouchableOpacity onPress={toggleStudentDataVisibility}>
+        <TouchableOpacity onPress={toggleStaffDataVisibility}>
           <FontAwesomeIcon icon={faUser} style={styles.navIcon} />
         </TouchableOpacity>
-        {/* Button to navigate to BusViewPage */}
         <TouchableOpacity onPress={() => navigation.navigate('BusView')}>
           <FontAwesomeIcon icon={faBus} style={styles.navIcon} />
         </TouchableOpacity>
       </View>
-
-      {/* Rest of the code remains the same */}
-      {/* Stepper, Student data etc. */}
 
       <Button
         title={isMapVisible ? 'Hide Map' : 'View Map'}
@@ -83,7 +138,14 @@ const FacultyInfoScreen = () => {
           </Marker>
         </MapView>
       )}
-      {isMapVisible && ( // Check if map is visible before rendering the stepper
+      {showUserData && userData && (
+        <Animated.View style={[styles.userDataContainer, { opacity: userDataAnim }]}>
+          {Object.entries(userData).map(([key, value]) => (
+            <Text key={key} style={styles.userDataText}>{key}: {value}</Text>
+          ))}
+        </Animated.View>
+      )}
+      {isMapVisible && (
         <View style={styles.stepper}>
           {locations.map((location, index) => (
             <View key={index} style={[styles.step, index === busPositionIndex ? styles.activeStep : null]}>
@@ -138,8 +200,22 @@ const styles = StyleSheet.create({
   stepText: {
     color: 'black',
   },
+  userDataContainer: {
+    position: 'absolute',
+    top: 90,
+    left: 10,
+    right: 10,
+    backgroundColor: '#FCE5CD',
+    padding: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#F7965C',
+  },
+  userDataText: {
+    marginBottom: 10,
+    fontSize: 16,
+    color: '#5E2612',
+  },
 });
-
-
 
 export default FacultyInfoScreen;

@@ -9,12 +9,10 @@ import { ref, get } from 'firebase/database';
 import { db } from '../../firebaseConfig';
 
 const attributeNames = {
-  name: 'Name',
-  rollno: 'Roll Number',
   bus_no: 'Bus Number',
   bus_stop: 'Bus Stop',
-  driver_name: 'Driver Name',
   mail: 'Email',
+  name: 'Name',
   parents_no: 'Parents Phone Number',
   phone_no: 'Phone Number',
 };

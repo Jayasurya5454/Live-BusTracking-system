@@ -9,9 +9,7 @@ const NotificationsToParents = () => {
   };
 
   const handleSend = () => {
-    // Here you can handle sending the message
     console.log('Sending message:', message);
-    // Add your logic to send the message
   };
 
   return (

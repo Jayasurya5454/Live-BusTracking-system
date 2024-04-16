@@ -1,6 +1,7 @@
+// FacultyLogin.js
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Animated, Alert } from 'react-native';
-import styles from './FacultyLoginStyles'; // Assuming you have a separate style file for faculty login
+import styles from './FacultyLoginStyles';
 import { useNavigation } from '@react-navigation/native';
 import { ref, get } from 'firebase/database';
 import { db } from '../../firebaseConfig';
@@ -31,10 +32,9 @@ const FacultyLogin = () => {
           const data = snapshot.val();
           const filteredFaculties = Object.values(data).filter(faculty => faculty.name === name && faculty.bus_no === busNumber);
           if (filteredFaculties.length > 0) {
-            // If a matching faculty is found, navigate to FacultyInfoScreen
+            // If a matching faculty is found, navigate to FacultyInfoScreen and pass the name
             console.log('Valid credentials. Proceeding to next page.');
-            Alert.alert('Login Successful', 'Welcome, faculty!', [{ text: 'OK' }]);
-            navigation.navigate('FacultyInfo');
+            navigation.navigate('FacultyInfo', { name }); // Pass the name to FacultyInfoScreen
           } else {
             // No matching faculty found, display error alert
             console.log('Invalid credentials. Please try again.');

@@ -32,7 +32,7 @@ const StudentLogin = () => {
           const filteredStudents = Object.values(data).filter(student => student.rollno === rollNumber && student.bus_no === busNumber);
           if (filteredStudents.length > 0) {
             console.log('Valid credentials. Proceeding to next page.');
-            navigation.navigate('StudentInfoScreen', { rollNumber }); // Pass roll number to StudentInfoScreen
+            navigation.navigate('StudentInfoScreen', { rollNumber,busNumber }); // Pass roll number to StudentInfoScreen
           } else {
             console.log('Invalid credentials. Please try again.');
             Alert.alert('Invalid Credentials', 'Please enter valid roll number and bus number.', [{ text: 'OK' }]);

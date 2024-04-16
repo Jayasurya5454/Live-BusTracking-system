@@ -25,13 +25,15 @@ const busStops = [
 const locations = ['Erode', 'Thindal', 'Perundurai', 'KEC'];
 
 const attributeNames = {
+  name: 'Name',
+  rollno: 'Roll Number',
   bus_no: 'Bus Number',
   bus_stop: 'Bus Stop',
+  driver_name: 'Driver Name',
   mail: 'Email',
-  name: 'Name',
   parents_no: 'Parents Phone Number',
   phone_no: 'Phone Number',
-  rollno: 'Roll Number'
+  
 };
 
 const StudentInfoScreen = () => {
@@ -184,9 +186,6 @@ useEffect(() => {
       <View style={styles.navBar}>
         <TouchableOpacity onPress={toggleStudentDataVisibility}>
           <FontAwesomeIcon icon={faUser} style={styles.navIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('BusView')}>
-          <FontAwesomeIcon icon={faBus} style={styles.navIcon} />
         </TouchableOpacity>
       </View>
       <View style={styles.mapContainer}>

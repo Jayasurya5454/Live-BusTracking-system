@@ -2,27 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Button, Animated } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faUser, faBus } from '@fortawesome/free-solid-svg-icons';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ref, get } from 'firebase/database';
 import { db } from '../../firebaseConfig';
-
-const INITIAL_REGION = {
-  latitude: 11.341036,
-  longitude: 77.717163,
-  latitudeDelta: 0.05, // Adjust this value to change the zoom level
-  longitudeDelta: 0.05 // Adjust this value to change the zoom level
-};
-
-const busStops = [
-  { name: 'Erode', latitude: 11.341036, longitude: 77.717163 },
-  { name: 'Thindal', latitude: 11.317164, longitude: 77.676392 },
-  { name: 'Perundurai', latitude: 11.27564, longitude: 77.58794 },
-  { name: 'KEC', latitude: 11.2742, longitude: 77.6070 }
-];
-
-const locations = ['Erode', 'Thindal', 'Perundurai', 'KEC'];
 
 const attributeNames = {
   name: 'Name',
@@ -33,7 +17,6 @@ const attributeNames = {
   mail: 'Email',
   parents_no: 'Parents Phone Number',
   phone_no: 'Phone Number',
-  
 };
 
 const StudentInfoScreen = () => {
@@ -43,9 +26,11 @@ const StudentInfoScreen = () => {
   const [isMapVisible, setIsMapVisible] = useState(true);
   const [showUserData, setShowUserData] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [busPosition, setBusPosition] = useState(busStops[0]);
+  const [busPosition, setBusPosition] = useState(null);
+  const [busStops, setBusStops] = useState([]);
+  const [locations, setLocations] = useState([]);
   const route = useRoute();
-  const { rollNumber } = route.params || {};
+  const { rollNumber, busNumber } = route.params || {};
 
   const fadeInAnim = useRef(new Animated.Value(0)).current;
   const userDataAnim = useRef(new Animated.Value(0)).current;
@@ -57,6 +42,50 @@ const StudentInfoScreen = () => {
       useNativeDriver: true,
     }).start();
   }, [fadeInAnim]);
+
+  useEffect(() => {
+    // Fetch bus route based on the passed busNumber
+    fetchBusRouteForBusNumber(busNumber); // Use the busNumber passed from navigation params
+  }, []);
+
+  const fetchBusRouteForBusNumber = async (busNumber) => {
+    try {
+      const busRoutesRef = ref(db, `bus_routes/${busNumber}`); // Use template literals to include the dynamic busNumber
+      const snapshot = await get(busRoutesRef);
+      if (snapshot.exists()) {
+        const routeData = snapshot.val();
+        const stops = [];
+        const locs = [];
+        Object.keys(routeData).forEach(stopIndex => {
+          const stopInfo = routeData[stopIndex];
+          const stop = {
+            latitude: stopInfo.latitude,
+            longitude: stopInfo.longitude,
+            name: stopInfo.stop
+          };
+          stops.push(stop);
+          locs.push(stopInfo.stop);
+        });
+
+        setBusStops(stops);
+        setLocations(locs);
+        setBusPosition(stops[0]); // Set initial bus position
+        if (mapRef.current) {
+          // Set initial region centered around the first bus stop
+          mapRef.current.animateToRegion({
+            latitude: stops[0].latitude,
+            longitude: stops[0].longitude,
+            latitudeDelta: 0.05, // Adjust this value to change the zoom level
+            longitudeDelta: 0.05 // Adjust this value to change the zoom level
+          });
+        }
+      } else {
+        console.log("No data found for bus ");
+      }
+    } catch (error) {
+      console.error('Error fetching bus route:', error);
+    }
+  };
 
   const toggleMapVisibility = () => {
     setIsMapVisible(!isMapVisible);
@@ -102,67 +131,67 @@ const StudentInfoScreen = () => {
   };
 
   // Continuous movement of the bus
-  // Continuous movement of the bus
-useEffect(() => {
-  const interval = setInterval(() => {
-    // Check if the bus is at the final destination (KEC)
-    if (busPositionIndex === busStops.length - 1) {
-      clearInterval(interval); // Stop the interval
-      return;
+  useEffect(() => {
+    if (busStops.length > 0) {
+      const interval = setInterval(() => {
+        // Check if the bus is at the final destination
+        if (busPositionIndex === busStops.length - 1) {
+          clearInterval(interval); // Stop the interval
+          return;
+        }
+
+        // Calculate the next stop index
+        const nextStopIndex = busPositionIndex + 1;
+
+        // Calculate the distance between current and next stop
+        const distance = calculateDistance(
+          busStops[busPositionIndex].latitude,
+          busStops[busPositionIndex].longitude,
+          busStops[nextStopIndex].latitude,
+          busStops[nextStopIndex].longitude
+        );
+
+        // Calculate the number of steps based on distance
+        const numSteps = Math.ceil(distance / 100); // Adjust the step size as needed
+
+        // Calculate the step size for latitude and longitude
+        const stepLat = (busStops[nextStopIndex].latitude - busStops[busPositionIndex].latitude) / numSteps;
+        const stepLng = (busStops[nextStopIndex].longitude - busStops[busPositionIndex].longitude) / numSteps;
+
+        // Animate the bus marker to move along the polyline
+        let i = 0;
+        const animationInterval = setInterval(() => {
+          // Calculate the new position
+          const newPosition = {
+            latitude: busStops[busPositionIndex].latitude + i * stepLat,
+            longitude: busStops[busPositionIndex].longitude + i * stepLng
+          };
+
+          // Update the position of the bus marker
+          setBusPosition(newPosition);
+
+          // Increment the step counter
+          i++;
+
+          // Check if reached the next stop
+          if (i > numSteps) {
+            // Move to the next stop
+            setBusPositionIndex(nextStopIndex);
+
+            // Stop the animation
+            clearInterval(animationInterval);
+
+            // Call useEffect again to start animation for the next segment
+            setTimeout(() => {
+              setBusPositionIndex(nextStopIndex);
+            }, 3000); // Delay before moving to the next stop (in milliseconds)
+          }
+        }, 30); // Interval for smooth animation (in milliseconds)
+      }, 15000); // Interval for moving to the next stop (in milliseconds) including the wait time at each stop
+
+      return () => clearInterval(interval);
     }
-
-    // Calculate the next stop index
-    const nextStopIndex = busPositionIndex + 1;
-
-    // Calculate the distance between current and next stop
-    const distance = calculateDistance(
-      busStops[busPositionIndex].latitude,
-      busStops[busPositionIndex].longitude,
-      busStops[nextStopIndex].latitude,
-      busStops[nextStopIndex].longitude
-    );
-
-    // Calculate the number of steps based on distance
-    const numSteps = Math.ceil(distance / 100); // Adjust the step size as needed
-
-    // Calculate the step size for latitude and longitude
-    const stepLat = (busStops[nextStopIndex].latitude - busStops[busPositionIndex].latitude) / numSteps;
-    const stepLng = (busStops[nextStopIndex].longitude - busStops[busPositionIndex].longitude) / numSteps;
-
-    // Animate the bus marker to move along the polyline
-    let i = 0;
-    const animationInterval = setInterval(() => {
-      // Calculate the new position
-      const newPosition = {
-        latitude: busStops[busPositionIndex].latitude + i * stepLat,
-        longitude: busStops[busPositionIndex].longitude + i * stepLng
-      };
-
-      // Update the position of the bus marker
-      setBusPosition(newPosition);
-
-      // Increment the step counter
-      i++;
-
-      // Check if reached the next stop
-      if (i > numSteps) {
-        // Move to the next stop
-        setBusPositionIndex(nextStopIndex);
-
-        // Stop the animation
-        clearInterval(animationInterval);
-
-        // Call useEffect again to start animation for the next segment
-        setTimeout(() => {
-          setBusPositionIndex(nextStopIndex);
-        }, 3000); // Delay before moving to the next stop (in milliseconds)
-      }
-    }, 30); // Interval for smooth animation (in milliseconds)
-  }, 15000); // Interval for moving to the next stop (in milliseconds) including the wait time at each stop
-
-  return () => clearInterval(interval);
-}, [busPositionIndex]);
-
+  }, [busPositionIndex, busStops]);
 
   // Function to calculate the distance between two points using Haversine formula
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -197,7 +226,6 @@ useEffect(() => {
       {isMapVisible && (
         <MapView
           style={styles.map}
-          initialRegion={INITIAL_REGION}
           provider={PROVIDER_GOOGLE}
           ref={mapRef}
         >
@@ -210,12 +238,14 @@ useEffect(() => {
             <Marker key={index} title={stop.name} coordinate={stop} pinColor={index === 0 ? 'blue' : 'red'} />
           ))}
           {/* Display bus marker at the current bus position */}
-          <Marker
-            title="Bus"
-            coordinate={busPosition}
-          >
-            <FontAwesome5 name="bus" size={30} color="blue" />
-          </Marker>
+          {busPosition && (
+            <Marker
+              title="Bus"
+              coordinate={busPosition}
+            >
+              <FontAwesome5 name="bus" size={30} color="blue" />
+            </Marker>
+          )}
         </MapView>
       )}
       {showUserData && userData && (
@@ -266,21 +296,25 @@ const styles = StyleSheet.create({
     // Adjust the height as needed
   },
   stepper: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
-    marginBottom: 10,
+    display: flex,
+    marginBottom: 10, 
+    overflow: 'scroll',
   },
   step: {
     padding: 15,
     borderRadius: 5,
     backgroundColor: 'grey',
+    alignItems: 'center',
   },
   activeStep: {
     backgroundColor: 'black',
   },
   stepText: {
     color: 'white',
+    textAlign: 'center',
   },
   userDataContainer: {
     position: 'absolute',

@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'reac
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { requestForegroundPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
 import NetInfo from '@react-native-community/netinfo';
+import { getDatabase, ref, push, remove } from 'firebase/database'; // Import Firebase database functions
 import styles from './ReportSubmitStyles';
 
 const ReportSubmit = () => {
@@ -21,7 +22,6 @@ const ReportSubmit = () => {
   const [isLocationEnabled, setIsLocationEnabled] = useState(false);
   const [isInternetConnected, setIsInternetConnected] = useState(false);
   const [isTracking, setIsTracking] = useState(false);
-  const [locationData, setLocationData] = useState(null);
   const [startButtonDisabled, setStartButtonDisabled] = useState(false);
   const [endButtonDisabled, setEndButtonDisabled] = useState(true);
 
@@ -62,12 +62,33 @@ const ReportSubmit = () => {
         const location = await getCurrentPositionAsync({});
         const { latitude, longitude } = location.coords;
         console.log(`Bus ${busNumber} Location - Latitude: ${latitude}, Longitude: ${longitude}`);
+
+        // Remove previous data from the database under the respective busNumber
+        const db = getDatabase();
+        const previousDataRef = ref(db, `busNumber/${busNumber}`);
+        remove(previousDataRef);
+
+        // Push location data to Firebase under the respective busNumber
+        const locationRef = ref(db, `busNumber/${busNumber}`);
+        push(locationRef, {
+          latitude,
+          longitude
+        });
+
         const intervalId = setInterval(async () => {
           try {
             const updatedLocation = await getCurrentPositionAsync({});
             const { latitude: updatedLatitude, longitude: updatedLongitude } = updatedLocation.coords;
             console.log(`Bus ${busNumber} Location - Latitude: ${updatedLatitude}, Longitude: ${updatedLongitude}`);
-            setLocationData({ latitude: updatedLatitude, longitude: updatedLongitude });
+
+            // Remove previous data from the database under the respective busNumber
+            remove(previousDataRef);
+
+            // Push updated location data to Firebase under the respective busNumber
+            push(locationRef, {
+              latitude: updatedLatitude,
+              longitude: updatedLongitude
+            });
           } catch (error) {
             console.error('Error updating location:', error);
             showErrorAlert('Location Error', 'Failed to update location. Please try again.');
@@ -85,7 +106,6 @@ const ReportSubmit = () => {
 
   const stopTracking = () => {
     setIsTracking(false);
-    setLocationData(null);
     setStartButtonDisabled(true);
     setEndButtonDisabled(true);
   };

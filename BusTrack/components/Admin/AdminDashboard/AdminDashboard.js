@@ -16,9 +16,13 @@ const AdminDashboard = () => {
         <Text style={styles.cardText}>Add Record</Text>
       </TouchableOpacity>
 
-      {/* New Card for CRUD View */}
       <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('CROWDView')}>
         <Text style={styles.cardText}>CROWD View</Text>
+      </TouchableOpacity>
+
+      {/* New Card for Temporary Driver */}
+      <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('SubstituteDriver')}>
+        <Text style={styles.cardText}>Substitute Driver</Text>
       </TouchableOpacity>
     </View>
   );

@@ -13,7 +13,11 @@ import StudentInfoScreen from './components/StudentLogin/StudentInfoScreen';
 import BusViewPage from './components/Admin/BusViewPage/BusViewPage';
 import FacultyInfoScreen from './components/FacultyLogin/FacultyInfoScreen';
 import DriverDashboard from './components/DriverLogin/DriverDashboard'; 
-import ReportSubmit from './components/ReportSubmit/ReportSubmit'; 
+import ReportSubmit from './components/ReportSubmit/ReportSubmit';
+import CROWDView from './components/Admin/CRUDView/CRUDView';
+import SubstituteDriver from './components/Admin/SubstituteDriver/SubstituteDriver';
+import NotificationsToParents from './components/Admin/NotificationsToParents/NotificationsToParents';
+
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -32,6 +36,9 @@ const App = () => {
         <Stack.Screen name="FacultyInfo" component={FacultyInfoScreen} /> 
         <Stack.Screen name="DriverDashboard" component={DriverDashboard} />
         <Stack.Screen name="ReportSubmit" component={ReportSubmit} />
+        <Stack.Screen name="CROWDView" component={CROWDView} />
+        <Stack.Screen name="SubstituteDriver" component={SubstituteDriver} />
+        <Stack.Screen name="NotificationsToParents" component={NotificationsToParents} /> 
       </Stack.Navigator>
     </NavigationContainer>
   );

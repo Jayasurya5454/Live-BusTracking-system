@@ -122,9 +122,6 @@ const StudentInfoScreen = () => {
         <TouchableOpacity onPress={toggleStudentDataVisibility}>
           <FontAwesomeIcon icon={faUser} style={styles.navIcon} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('BusView')}>
-          <FontAwesomeIcon icon={faBus} style={styles.navIcon} />
-        </TouchableOpacity>
       </View>
       <View style={styles.mapContainer}>
         <Button

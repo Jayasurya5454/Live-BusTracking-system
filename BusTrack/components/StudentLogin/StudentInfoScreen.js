@@ -92,7 +92,7 @@ const StudentInfoScreen = () => {
 
   const toggleStudentDataVisibility = async () => {
     if (!userData) {
-      const studentRef = ref(db, 'students');
+      const studentRef = ref(db, 'staff');
       get(studentRef)
         .then(snapshot => {
           if (snapshot.exists()) {
@@ -297,9 +297,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
-    display: flex,
     marginBottom: 10, 
-    overflow: 'scroll',
   },
   step: {
     padding: 15,

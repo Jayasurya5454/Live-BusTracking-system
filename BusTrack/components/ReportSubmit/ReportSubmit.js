@@ -105,52 +105,19 @@ const ReportSubmit = () => {
   };
 
   const stopTracking = () => {
-    setIsTracking(false);
+    setIsTracking(false); // Stop tracking GPS location
     setStartButtonDisabled(true);
     setEndButtonDisabled(true);
   };
 
   const handleSubmitStart = () => {
-    if (!validateStartForm()) {
-      return;
-    }
     console.log('Start Form submitted successfully');
     startTracking();
   };
 
   const handleSubmitEnd = () => {
-    if (!validateEndForm()) {
-      return;
-    }
     console.log('End Form submitted successfully');
-    stopTracking(); // Stop tracking when End Bus is submitted
-  };
-
-  const validateStartForm = () => {
-    if (
-      dieselQuantity === '' ||
-      startTimeMorning === '' ||
-      endTimeMorning === '' ||
-      startTimeEvening === '' ||
-      endTimeEvening === '' ||
-      startingKm === ''
-    ) {
-      Alert.alert('Incomplete Form', 'Please fill out all required fields.');
-      return false;
-    }
-    return true;
-  };
-
-  const validateEndForm = () => {
-    if (
-      endTimeMorning === '' ||
-      endTimeEvening === '' ||
-      endingKm === ''
-    ) {
-      Alert.alert('Incomplete Form', 'Please fill out all required fields.');
-      return false;
-    }
-    return true;
+    stopTracking(); // Stop tracking GPS location
   };
 
   return (

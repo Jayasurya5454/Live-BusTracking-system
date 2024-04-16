@@ -34,7 +34,7 @@ const FacultyLogin = () => {
           if (filteredFaculties.length > 0) {
             // If a matching faculty is found, navigate to FacultyInfoScreen and pass the name
             console.log('Valid credentials. Proceeding to next page.');
-            navigation.navigate('FacultyInfo', { name }); // Pass the name to FacultyInfoScreen
+            navigation.navigate('FacultyInfo', { name,busNumber }); // Pass the name to FacultyInfoScreen
           } else {
             // No matching faculty found, display error alert
             console.log('Invalid credentials. Please try again.');

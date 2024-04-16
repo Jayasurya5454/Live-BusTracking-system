@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, ScrollView, KeyboardAvoidingView } from 'react-native';
 import styles from './AddRecordFormStyles'; // Import styles
 import * as Animatable from 'react-native-animatable';
+import { set, ref } from 'firebase/database';
+import { db } from '../../../firebaseConfig'; // Assuming you have a Firebase configuration file
 
 const AddRecordForm = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -11,10 +13,12 @@ const AddRecordForm = ({ navigation }) => {
   const [stopName, setStopName] = useState('');
   const [parentsPhoneNumber, setParentsPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
+  const [driverName, setDriverName] = useState('');
+  const [phoneNo, setPhoneNo] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false); // Track submission status
 
   const handleAddRecord = () => {
-    if (!name.trim() || !rollNumber.trim() || !parentsName.trim() || !busNumber.trim() || !stopName.trim() || !parentsPhoneNumber.trim() || !email.trim()) {
+    if (!name.trim() || !rollNumber.trim() || !parentsName.trim() || !busNumber.trim() || !stopName.trim() || !parentsPhoneNumber.trim() || !email.trim() || !driverName.trim() || !phoneNo.trim()) {
       Alert.alert('Error', 'All fields are mandatory');
     } else if (!/^\d{10}$/.test(parentsPhoneNumber.trim())) {
       Alert.alert('Error', 'Please enter a valid 10-digit phone number for Parent\'s Phone Number');
@@ -22,31 +26,40 @@ const AddRecordForm = ({ navigation }) => {
       Alert.alert('Error', 'Please enter a valid email address');
     } else {
       const recordData = {
-        name,
-        rollNumber,
-        parentsName,
-        busNumber,
-        stopName,
-        parentsPhoneNumber,
-        email,
+        bus_no: busNumber,
+        bus_stop: stopName,
+        driver_name: driverName,
+        mail: email,
+        name: parentsName,
+        parents_no: parentsPhoneNumber,
+        phone_no: phoneNo,
+        rollno: rollNumber,
       };
 
-      // Here you can perform any action with the collected data, such as sending it to a server or storing it locally
-      console.log('Record data:', recordData);
-
-      // Display success message and reset form fields
-      setIsSubmitted(true);
-      setTimeout(() => {
-        setIsSubmitted(false);
-        setName('');
-        setRollNumber('');
-        setParentsName('');
-        setBusNumber('');
-        setStopName('');
-        setParentsPhoneNumber('');
-        setEmail('');
-        navigation.goBack();
-      }, 3000);
+      // Set recordData to Firebase using rollNumber as the key
+      const studentsRef = ref(db, `students/${rollNumber}`);
+      set(studentsRef, recordData)
+        .then(() => {
+          console.log('Record added successfully to Firebase:', recordData);
+          setIsSubmitted(true);
+          setTimeout(() => {
+            setIsSubmitted(false);
+            setName('');
+            setRollNumber('');
+            setParentsName('');
+            setBusNumber('');
+            setStopName('');
+            setParentsPhoneNumber('');
+            setEmail('');
+            setDriverName('');
+            setPhoneNo('');
+            navigation.goBack();
+          }, 3000);
+        })
+        .catch(error => {
+          console.error('Error adding record to Firebase:', error);
+          Alert.alert('Error', 'Failed to add record. Please try again.');
+        });
     }
   };
 
@@ -108,6 +121,22 @@ const AddRecordForm = ({ navigation }) => {
             value={email} 
             onChangeText={setEmail} 
             placeholder="Enter Email" 
+          />
+
+          <Text style={styles.label}>Driver Name *</Text>
+          <TextInput 
+            style={styles.input} 
+            value={driverName} 
+            onChangeText={setDriverName} 
+            placeholder="Enter Driver Name" 
+          />
+
+          <Text style={styles.label}>Phone Number *</Text>
+          <TextInput 
+            style={styles.input} 
+            value={phoneNo} 
+            onChangeText={setPhoneNo} 
+            placeholder="Enter Phone Number" 
           />
 
           <Button title="Add Record" onPress={handleAddRecord} />

@@ -1,5 +1,3 @@
-// AdminDashboard.js
-
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -16,6 +14,11 @@ const AdminDashboard = () => {
       
       <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('AddRecord')}>
         <Text style={styles.cardText}>Add Record</Text>
+      </TouchableOpacity>
+
+      {/* New Card for CRUD View */}
+      <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('CROWDView')}>
+        <Text style={styles.cardText}>CROWD View</Text>
       </TouchableOpacity>
     </View>
   );

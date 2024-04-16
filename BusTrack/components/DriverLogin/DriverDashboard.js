@@ -1,36 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
-import { ref, get } from 'firebase/database';
-import { db } from '../../firebaseConfig';
+import { faUser, faBus } from '@fortawesome/free-solid-svg-icons';
 
-const DriverDashboard = () => {
+const DriverDashboard = ({ route }) => {
   const navigation = useNavigation();
-  const route = useRoute();
-  const [busData, setBusData] = useState(null);
-  const { busNumber } = route.params;
-
-  useEffect(() => {
-    // Fetch bus data when component mounts
-    const busRef = ref(db, `buses/${busNumber}`);
-    get(busRef)
-      .then(snapshot => {
-        if (snapshot.exists()) {
-          setBusData(snapshot.val());
-        } else {
-          console.log('No data found for this bus.');
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching bus data:', error);
-      });
-  }, [busNumber]);
+  const { busNumber, driverName } = route.params;
 
   const handleReportSubmit = () => {
-    // Navigate to the report submit page
-    navigation.navigate('ReportSubmit');
+    // Pass busNumber to ReportSubmit screen
+    navigation.navigate('ReportSubmit', { busNumber });
+  };
+
+  const handleDriverDetails = () => {
+    // Navigate to the driver details page
+    navigation.navigate('DriverDetails', { driverName });
   };
 
   const handleBusView = () => {
@@ -38,39 +23,8 @@ const DriverDashboard = () => {
     navigation.navigate('BusView');
   };
 
-  const handleDriverDetails = () => {
-    // Fetch driver details based on the bus number
-    const driversRef = ref(db, 'drivers');
-
-    get(driversRef)
-      .then(snapshot => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const filteredDrivers = Object.values(data).filter(driver => driver.bus_no === busNumber);
-          if (filteredDrivers.length > 0) {
-            // If driver found, navigate to DriverDetails and pass driver data
-            navigation.navigate('DriverDetails', { driverData: filteredDrivers[0] });
-          } else {
-            console.log('No driver found for this bus number.');
-          }
-        } else {
-          console.log('No data found at the "drivers" node.');
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
-  };
-
   return (
     <View style={styles.container}>
-      {busData && (
-        <View style={styles.busDataContainer}>
-          <Text>Bus Number: {busData.bus_no}</Text>
-          <Text>Driver Name: {busData.driver_name}</Text>
-          {/* Add more data as needed */}
-        </View>
-      )}
       <TouchableOpacity style={styles.card} onPress={handleReportSubmit}>
         <Text style={styles.cardText}>Report Submit</Text>
       </TouchableOpacity>

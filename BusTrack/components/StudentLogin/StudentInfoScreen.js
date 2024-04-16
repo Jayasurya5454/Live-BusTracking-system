@@ -92,7 +92,7 @@ const StudentInfoScreen = () => {
 
   const toggleStudentDataVisibility = async () => {
     if (!userData) {
-      const studentRef = ref(db, 'staff');
+      const studentRef = ref(db, 'students');
       get(studentRef)
         .then(snapshot => {
           if (snapshot.exists()) {

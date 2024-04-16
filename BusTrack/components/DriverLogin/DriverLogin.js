@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AppRegistry } from 'react-native';
 import { View, Text, TextInput, TouchableOpacity, Animated, Alert } from 'react-native';
 import styles from './DriverLoginStyles';
 import { useNavigation } from '@react-navigation/native';
 import { ref, get } from 'firebase/database';
 import { db } from '../../firebaseConfig';
+import { PermissionsAndroid } from 'react-native';
+import Geolocation from '@react-native-community/geolocation';
+
 
 const DriverLogin = () => {
   const navigation = useNavigation();
@@ -22,7 +26,40 @@ const DriverLogin = () => {
     ).start();
   }, [fadeAnim]);
 
-  const handleLogin = () => {
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'App needs access to your location',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Location permission granted');
+        Geolocation.getCurrentPosition(
+          position => {
+            handleLogin(position.coords.latitude, position.coords.longitude);
+          },
+          error => {
+            console.error('Error getting location:', error);
+            Alert.alert('Error', 'Error getting location. Please try again.', [{ text: 'OK' }]);
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+      } else {
+        console.log('Location permission denied');
+        Alert.alert('Permission Denied', 'Location permission denied. Please enable it to login.', [{ text: 'OK' }]);
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  const handleLogin = (latitude, longitude) => {
     const driversRef = ref(db, 'drivers');
 
     get(driversRef)
@@ -46,6 +83,23 @@ const DriverLogin = () => {
       });
   };
 
+  const handleLoginButtonPress = async () => {
+    if (Platform.OS === 'android') {
+      await requestLocationPermission();
+    } else {
+      Geolocation.getCurrentPosition(
+        position => {
+          handleLogin(position.coords.latitude, position.coords.longitude);
+        },
+        error => {
+          console.error('Error getting location:', error);
+          Alert.alert('Error', 'Error getting location. Please try again.', [{ text: 'OK' }]);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      );
+    }
+  };
+
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.inputContainer}>
@@ -61,7 +115,7 @@ const DriverLogin = () => {
           onChangeText={text => setBusNumber(text)} 
         />
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <TouchableOpacity style={styles.button} onPress={handleLoginButtonPress}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
         </View>

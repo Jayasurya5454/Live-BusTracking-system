@@ -7,6 +7,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ref, get } from 'firebase/database';
 import { db } from '../../firebaseConfig';
+import { encode as base64Encode } from 'base-64';
 
 const attributeNames = {
   bus_no: 'Bus Number',
@@ -42,13 +43,12 @@ const StudentInfoScreen = () => {
   }, [fadeInAnim]);
 
   useEffect(() => {
-    // Fetch bus route based on the passed busNumber
-    fetchBusRouteForBusNumber(busNumber); // Use the busNumber passed from navigation params
+    fetchBusRouteForBusNumber(busNumber);
   }, []);
 
   const fetchBusRouteForBusNumber = async (busNumber) => {
     try {
-      const busRoutesRef = ref(db, `bus_routes/${busNumber}`); // Use template literals to include the dynamic busNumber
+      const busRoutesRef = ref(db, `bus_routes/${busNumber}`);
       const snapshot = await get(busRoutesRef);
       if (snapshot.exists()) {
         const routeData = snapshot.val();
@@ -67,14 +67,13 @@ const StudentInfoScreen = () => {
 
         setBusStops(stops);
         setLocations(locs);
-        setBusPosition(stops[0]); // Set initial bus position
+        setBusPosition(stops[0]);
         if (mapRef.current) {
-          // Set initial region centered around the first bus stop
           mapRef.current.animateToRegion({
             latitude: stops[0].latitude,
             longitude: stops[0].longitude,
-            latitudeDelta: 0.05, // Adjust this value to change the zoom level
-            longitudeDelta: 0.05 // Adjust this value to change the zoom level
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05
           });
         }
       } else {
@@ -87,7 +86,7 @@ const StudentInfoScreen = () => {
 
   const toggleMapVisibility = () => {
     setIsMapVisible(!isMapVisible);
-    setShowUserData(false); // Hide user data when map is toggled
+    setShowUserData(false);
   };
 
   const toggleStudentDataVisibility = async () => {
@@ -99,7 +98,6 @@ const StudentInfoScreen = () => {
             const data = snapshot.val();
             const user = Object.values(data).find(student => student.rollno === rollNumber);
             if (user) {
-              // Preprocess user data attribute names
               const processedUserData = {};
               Object.entries(user).forEach(([key, value]) => {
                 const processedKey = attributeNames[key] || key;
@@ -107,7 +105,6 @@ const StudentInfoScreen = () => {
               });
               setUserData(processedUserData);
 
-              // Animate user data view
               Animated.timing(userDataAnim, {
                 toValue: 1,
                 duration: 1000,
@@ -128,83 +125,103 @@ const StudentInfoScreen = () => {
     setShowUserData(!showUserData);
   };
 
-  // Continuous movement of the bus
+  const isFinalDestination = () => {
+    return busPositionIndex === locations.length - 1;
+  };
+
+  useEffect(() => {
+    if (isFinalDestination()) {
+      const sendSMS = async (body, to) => {
+        const accountSid = "AC4db63a134931c172c24d0ed88a86704b";
+        const authToken = "1673181c12e58465d6c0170c76c8759e";
+        const twilioPhoneNumber = "+12513195271";
+        const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+      
+        const formData = new FormData();
+        formData.append('From', twilioPhoneNumber);
+        formData.append('To', to);
+        formData.append('Body', body);
+      
+        const credentials = `${accountSid}:${authToken}`;
+        const base64Credentials = base64Encode(credentials); // Encode credentials using base64Encode from 'base-64'
+      
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              Authorization: `Basic ${base64Credentials}`,
+            },
+            body: formData,
+          });
+          const data = await response.json();
+          console.log(data);
+        } catch (error) {
+          console.error('Error sending SMS:', error);
+        }
+      };
+      
+      // Sending SMS to the specified phone number with a message
+      sendSMS("Your child has reached the school.", "+919043720850"); // Replace with actual phone number
+    }
+  }, [busPositionIndex]); 
+
   useEffect(() => {
     if (busStops.length > 0) {
       const interval = setInterval(() => {
-        // Check if the bus is at the final destination
         if (busPositionIndex === busStops.length - 1) {
-          clearInterval(interval); // Stop the interval
+          clearInterval(interval);
           return;
         }
 
-        // Calculate the next stop index
         const nextStopIndex = busPositionIndex + 1;
-
-        // Calculate the distance between current and next stop
         const distance = calculateDistance(
           busStops[busPositionIndex].latitude,
           busStops[busPositionIndex].longitude,
           busStops[nextStopIndex].latitude,
           busStops[nextStopIndex].longitude
         );
-
-        // Calculate the number of steps based on distance
-        const numSteps = Math.ceil(distance / 100); // Adjust the step size as needed
-
-        // Calculate the step size for latitude and longitude
+        const numSteps = Math.ceil(distance / 100);
         const stepLat = (busStops[nextStopIndex].latitude - busStops[busPositionIndex].latitude) / numSteps;
         const stepLng = (busStops[nextStopIndex].longitude - busStops[busPositionIndex].longitude) / numSteps;
 
-        // Animate the bus marker to move along the polyline
         let i = 0;
         const animationInterval = setInterval(() => {
-          // Calculate the new position
           const newPosition = {
             latitude: busStops[busPositionIndex].latitude + i * stepLat,
             longitude: busStops[busPositionIndex].longitude + i * stepLng
           };
 
-          // Update the position of the bus marker
           setBusPosition(newPosition);
-
-          // Increment the step counter
           i++;
 
-          // Check if reached the next stop
           if (i > numSteps) {
-            // Move to the next stop
             setBusPositionIndex(nextStopIndex);
-
-            // Stop the animation
             clearInterval(animationInterval);
-
-            // Call useEffect again to start animation for the next segment
             setTimeout(() => {
               setBusPositionIndex(nextStopIndex);
-            }, 3000); // Delay before moving to the next stop (in milliseconds)
+            }, 3000);
           }
-        }, 30); // Interval for smooth animation (in milliseconds)
-      }, 15000); // Interval for moving to the next stop (in milliseconds) including the wait time at each stop
+        }, 30);
+
+      }, 15000);
 
       return () => clearInterval(interval);
     }
   }, [busPositionIndex, busStops]);
 
-  // Function to calculate the distance between two points using Haversine formula
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3; // Earth radius in meters
-    const φ1 = (lat1 * Math.PI) / 180; // Latitude of point 1 in radians
-    const φ2 = (lat2 * Math.PI) / 180; // Latitude of point 2 in radians
-    const Δφ = ((lat2 - lat1) * Math.PI) / 180; // Difference in latitudes
-    const Δλ = ((lon2 - lon1) * Math.PI) / 180; // Difference in longitudes
+    const R = 6371e3;
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
     const a =
       Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
       Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    const distance = R * c; // Distance in meters
+    const distance = R * c;
     return distance;
   };
 
@@ -235,7 +252,6 @@ const StudentInfoScreen = () => {
           {busStops.map((stop, index) => (
             <Marker key={index} title={stop.name} coordinate={stop} pinColor={index === 0 ? 'blue' : 'red'} />
           ))}
-          {/* Display bus marker at the current bus position */}
           {busPosition && (
             <Marker
               title="Bus"
@@ -291,15 +307,12 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 1,
     height: 340,
-    // Adjust the height as needed
   },
   stepper: {
     flexDirection: 'column',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
-    display: flex,
     marginBottom: 10, 
-    overflow: 'scroll',
   },
   step: {
     padding: 15,
@@ -316,19 +329,19 @@ const styles = StyleSheet.create({
   },
   userDataContainer: {
     position: 'absolute',
-    top: 90, // Adjust the top position as needed
+    top: 90,
     left: 10,
     right: 10,
-    backgroundColor: '#FCE5CD', // Light orange background color
+    backgroundColor: '#FCE5CD',
     padding: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#F7965C', // Border color
+    borderColor: '#F7965C',
   },
   userDataText: {
     marginBottom: 10,
     fontSize: 16,
-    color: '#5E2612', // Dark brown text color
+    color: '#5E2612',
   },
 });
 

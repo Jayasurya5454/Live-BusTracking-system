@@ -17,6 +17,7 @@ import ReportSubmit from './components/ReportSubmit/ReportSubmit';
 import CROWDView from './components/Admin/CRUDView/CRUDView';
 import SubstituteDriver from './components/Admin/SubstituteDriver/SubstituteDriver';
 import NotificationsToParents from './components/Admin/NotificationsToParents/NotificationsToParents';
+import BusDetails from './components/Admin/BusViewPage/BusDetails';
 
 const Stack = createStackNavigator();
 
@@ -39,6 +40,7 @@ const App = () => {
         <Stack.Screen name="CROWDView" component={CROWDView} />
         <Stack.Screen name="SubstituteDriver" component={SubstituteDriver} />
         <Stack.Screen name="NotificationsToParents" component={NotificationsToParents} /> 
+        <Stack.Screen name="BusDetails" component={BusDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );

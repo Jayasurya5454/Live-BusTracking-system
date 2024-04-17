@@ -1,5 +1,4 @@
 // BusViewPage.js
-
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -12,22 +11,19 @@ const BusViewPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [busNumbers, setBusNumbers] = useState([...Array(60).keys()].map(i => i + 1));
   const [animation] = useState(new Animated.Value(0));
+  const [selectedBusNumber, setSelectedBusNumber] = useState(null); // Track selected bus number
 
   const filteredBusNumbers = busNumbers.filter(busNumber => busNumber.toString().includes(searchQuery));
 
-  const animate = () => {
-    Animated.timing(animation, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
+  const handleBusCardPress = (busNumber) => {
+    setSelectedBusNumber(busNumber); // Set selected bus number
+    // Navigate to the map view or perform any other action
+    navigation.navigate('BusDetails', { busNumber }); // Navigate to MapView with the selected bus number
   };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer} keyboardShouldPersistTaps="handled">
       <View style={styles.container}>
-        
-
         <TextInput
           style={styles.searchBar}
           placeholder="Search Bus Number"
@@ -37,7 +33,7 @@ const BusViewPage = () => {
 
         <View style={styles.busCardsContainer}>
           {filteredBusNumbers.map(busNumber => (
-            <TouchableOpacity key={busNumber} style={styles.busCard}>
+            <TouchableOpacity key={busNumber} style={styles.busCard} onPress={() => handleBusCardPress(busNumber)}>
               <Text style={styles.busCardText}>Bus {busNumber}</Text>
             </TouchableOpacity>
           ))}
@@ -47,9 +43,7 @@ const BusViewPage = () => {
       </View>
 
       <Animated.View style={[styles.animatedView, { transform: [{ translateY: animation.interpolate({ inputRange: [0, 1], outputRange: [100, 0] }) }] }]}>
-        <TouchableOpacity style={styles.extraFeatureCard} onPress={animate}>
-          {/* Remove the Text component if you want to remove the "Extra Feature" text */}
-        </TouchableOpacity>
+        {/* Add any extra feature component here */}
       </Animated.View>
     </ScrollView>
   );

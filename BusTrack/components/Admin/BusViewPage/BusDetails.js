@@ -1,53 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Button, Animated } from 'react-native';
+import { View, StyleSheet, Button } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { ref, get } from 'firebase/database';
 import { db } from '../../../firebaseConfig';
 
-const CRUDView = () => {
-  const navigation = useNavigation();
+const BusDetails = () => {
   const mapRef = useRef(null);
-  const [busPositions, setBusPositions] = useState([]); // State to store bus positions
+  const [busPositions, setBusPositions] = useState([]);
   const [busStops, setBusStops] = useState([]);
-  const [locations, setLocations] = useState([]);
   const route = useRoute();
+  const { busNumber } = route.params || {};
 
   useEffect(() => {
-    // Fetch details of all buses
     fetchBusDetails();
   }, []);
-  // const darkStyle = [
-  //   {
-  //     elementType: 'geometry',
-  //     stylers: [
-  //       {
-  //         color: '#242f3e',
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     elementType: 'labels.text.fill',
-  //     stylers: [
-  //       {
-  //         color: '#746855',
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     elementType: 'labels.text.stroke',
-  //     stylers: [
-  //       {
-  //         color: '#242f3e',
-  //       },
-  //     ],
-  //   },
-  //   // Add more styling elements as needed...
-  // ];
-  
 
   const fetchBusDetails = async () => {
     try {
@@ -55,10 +23,10 @@ const CRUDView = () => {
       const snapshot = await get(busRouteRef);
       if (snapshot.exists()) {
         const busRouteData = snapshot.val();
-        const positions = Object.values(busRouteData).map(node => ({
-          latitude: node.latitude,
-          longitude: node.longitude,
-          name: node.stop
+        const positions = Object.values(busRouteData).map(stopInfo => ({
+          latitude: stopInfo.latitude,
+          longitude: stopInfo.longitude,
+          name: stopInfo.stop
         }));
         setBusPositions([positions]); // Store bus positions as an array of arrays
         setBusStops(positions);
@@ -92,32 +60,34 @@ const CRUDView = () => {
         style={styles.map}
         provider={PROVIDER_GOOGLE}
         ref={mapRef}
-        // customMapStyle={darkStyle}
+        initialRegion={{
+          latitude: busStops.length > 0 ? busStops[0].latitude : 0,
+          longitude: busStops.length > 0 ? busStops[0].longitude : 0,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05
+        }}
       >
-        {/* Iterate over busPositions state to display markers for each bus */}
         {busPositions.map((busRoute, busIndex) => (
           <React.Fragment key={busIndex}>
             <Polyline
-              coordinates={busRoute.map(stop => ({ latitude: stop.latitude, longitude: stop.longitude }))}
+              coordinates={busRoute}
               strokeWidth={2}
               strokeColor="grey"
             />
             {busRoute.map((stop, stopIndex) => (
               <Marker key={`${busIndex}-${stopIndex}`} title={stop.name} coordinate={stop} pinColor={stopIndex === 0 ? 'blue' : 'red'} />
             ))}
-            {/* Display bus marker at the current bus position */}
             {busRoute.length > 0 && (
               <Marker
-              title={`Bus ${busIndex + 1}`}
-              coordinate={busRoute[0]}
-            >
-              <FontAwesome5 name="bus" size={30} color="blue" />
-            </Marker>
+                title={`Bus ${busIndex + 1}`}
+                coordinate={busRoute[0]}
+              >
+                <FontAwesome5 name="bus" size={30} color="blue" />
+              </Marker>
             )}
           </React.Fragment>
         ))}
       </MapView>
-      {/* Stepper and other components can be added here if needed */}
     </View>
   );
 };
@@ -135,4 +105,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CRUDView;
+export default BusDetails;

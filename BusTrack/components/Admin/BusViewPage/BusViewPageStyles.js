@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   busCard: {
     width: '48%', // Adjust the width to show only two cards per row
     height: 100,
-    backgroundColor: 'orange', // Change the background color to orange
+    backgroundColor: '#2596be', // Change the background color to orange
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',

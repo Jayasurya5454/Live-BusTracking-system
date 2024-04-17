@@ -51,34 +51,40 @@ const CRUDView = () => {
 
   const fetchBusDetails = async () => {
     try {
-      const busRouteRef = ref(db, `bus_routes/${busNumber}`); // Reference to the specific bus route
-      const snapshot = await get(busRouteRef);
+      const busRoutesRef = ref(db, 'bus_routes'); // Reference to bus routes
+      const snapshot = await get(busRoutesRef);
       if (snapshot.exists()) {
-        const busRouteData = snapshot.val();
-        const positions = Object.values(busRouteData).map(node => ({
-          latitude: node.latitude,
-          longitude: node.longitude,
-          name: node.stop
-        }));
-        setBusPositions([positions]); // Store bus positions as an array of arrays
-        setBusStops(positions);
-        if (mapRef.current && positions.length > 0) {
-          // Center the map around the first bus stop of the specified bus route
+        const data = snapshot.val();
+        const positions = Object.values(data).map(busRoute => {
+          const stops = Object.values(busRoute).map(stopInfo => ({
+            latitude: stopInfo.latitude,
+            longitude: stopInfo.longitude,
+            name: stopInfo.stop
+          }));
+          return stops;
+        });
+        setBusPositions(positions); // Set bus positions in state
+        // Set initial bus stops and locations (assuming all buses have the same stops)
+        const firstBusStops = positions[0] || [];
+        const firstBusLocations = firstBusStops.map(stop => stop.name);
+        setBusStops(firstBusStops);
+        setLocations(firstBusLocations);
+        if (mapRef.current && firstBusStops.length > 0) {
+          // Set initial region centered around the first bus stop of the first bus
           mapRef.current.animateToRegion({
-            latitude: positions[0].latitude,
-            longitude: positions[0].longitude,
-            latitudeDelta: 0.05,
-            longitudeDelta: 0.05
+            latitude: firstBusStops[0].latitude,
+            longitude: firstBusStops[0].longitude,
+            latitudeDelta: 0.05, // Adjust this value to change the zoom level
+            longitudeDelta: 0.05 // Adjust this value to change the zoom level
           });
         }
       } else {
-        console.log(`No data found for bus route ${busNumber}.`);
+        console.log("No data found for bus routes.");
       }
     } catch (error) {
       console.error('Error fetching bus details:', error);
     }
   };
-  
 
   return (
     <View style={styles.container}>

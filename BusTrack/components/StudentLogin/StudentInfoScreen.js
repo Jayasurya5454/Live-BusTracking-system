@@ -13,7 +13,6 @@ const attributeNames = {
   bus_no: 'Bus Number',
   bus_stop: 'Bus Stop',
   mail: 'Email',
-
   name: 'Name',
   parents_no: 'Parents Phone Number',
   phone_no: 'Phone Number',
@@ -226,11 +225,18 @@ const StudentInfoScreen = () => {
     return distance;
   };
 
+  const navigateToCrowdPage = () => {
+    navigation.navigate('CROWDView');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.navBar}>
         <TouchableOpacity onPress={toggleStudentDataVisibility}>
           <FontAwesomeIcon icon={faUser} style={styles.navIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={navigateToCrowdPage}>
+          <FontAwesome5 name="bus" size={24} color="blue" style={styles.busIcon} />
         </TouchableOpacity>
       </View>
       <View style={styles.mapContainer}>
@@ -300,6 +306,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#007BFF',
     marginLeft: 10,
+  },
+  busIcon: {
+    fontSize: 24,
+    marginRight: 10,
   },
   mapContainer: {
     marginBottom: 10,

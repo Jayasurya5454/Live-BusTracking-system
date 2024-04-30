@@ -1,61 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Button, Animated } from 'react-native';
+import { View, Button, StyleSheet } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { ref, get } from 'firebase/database';
 import { db } from '../../../firebaseConfig';
 
 const CRUDView = () => {
-  const navigation = useNavigation();
   const mapRef = useRef(null);
-  const [busPositions, setBusPositions] = useState([]); // State to store bus positions
-  const [busStops, setBusStops] = useState([]);
-  const [locations, setLocations] = useState([]);
-  const route = useRoute();
+  const [busPositions, setBusPositions] = useState([]);
+  const [currentStopIndexes, setCurrentStopIndexes] = useState([0, 0]); // One for each bus
+  const [isMoving, setIsMoving] = useState(true);
 
   useEffect(() => {
-    // Fetch details of all buses
     fetchBusDetails();
   }, []);
-  // const darkStyle = [
-  //   {
-  //     elementType: 'geometry',
-  //     stylers: [
-  //       {
-  //         color: '#242f3e',
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     elementType: 'labels.text.fill',
-  //     stylers: [
-  //       {
-  //         color: '#746855',
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     elementType: 'labels.text.stroke',
-  //     stylers: [
-  //       {
-  //         color: '#242f3e',
-  //       },
-  //     ],
-  //   },
-  //   // Add more styling elements as needed...
-  // ];
-  
 
   const fetchBusDetails = async () => {
     try {
-      const busRoutesRef = ref(db, 'bus_routes'); // Reference to bus routes
+      const busRoutesRef = ref(db, 'bus_routes');
       const snapshot = await get(busRoutesRef);
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const positions = Object.values(data).map(busRoute => {
+        const busRoutesToDisplay = ['27', '74'];
+        const positions = busRoutesToDisplay.map(routeID => {
+          const busRoute = data[routeID];
           const stops = Object.values(busRoute).map(stopInfo => ({
             latitude: stopInfo.latitude,
             longitude: stopInfo.longitude,
@@ -63,21 +31,10 @@ const CRUDView = () => {
           }));
           return stops;
         });
-        setBusPositions(positions); // Set bus positions in state
-        // Set initial bus stops and locations (assuming all buses have the same stops)
-        const firstBusStops = positions[0] || [];
-        const firstBusLocations = firstBusStops.map(stop => stop.name);
-        setBusStops(firstBusStops);
-        setLocations(firstBusLocations);
-        if (mapRef.current && firstBusStops.length > 0) {
-          // Set initial region centered around the first bus stop of the first bus
-          mapRef.current.animateToRegion({
-            latitude: firstBusStops[0].latitude,
-            longitude: firstBusStops[0].longitude,
-            latitudeDelta: 0.05, // Adjust this value to change the zoom level
-            longitudeDelta: 0.05 // Adjust this value to change the zoom level
-          });
-        }
+        setBusPositions(positions);
+
+        // Start bus movement
+        startBusMovement();
       } else {
         console.log("No data found for bus routes.");
       }
@@ -86,21 +43,39 @@ const CRUDView = () => {
     }
   };
 
+ const startBusMovement = () => {
+  const interval = setInterval(() => {
+    if (isMoving) {
+      setCurrentStopIndexes(prevIndexes => 
+        prevIndexes.map((index, busIndex) => {
+          const nextIndex = (index + 1) % (busPositions[busIndex] ? busPositions[busIndex].length : 1);
+          return nextIndex;
+        })
+      );
+    }
+  }, 3500); // Change this interval as needed
+
+  return () => clearInterval(interval);
+};
+
+
+  const toggleBusMovement = () => {
+    setIsMoving(prevState => !prevState);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.mapContainer}>
         <Button
-          title={'View Map'}
-          onPress={() => {}} // Handle map visibility toggle if needed
+          title={isMoving ? 'Pause Movement' : 'Resume Movement'}
+          onPress={toggleBusMovement}
         />
       </View>
       <MapView
         style={styles.map}
         provider={PROVIDER_GOOGLE}
         ref={mapRef}
-        // customMapStyle={darkStyle}
       >
-        {/* Iterate over busPositions state to display markers for each bus */}
         {busPositions.map((busRoute, busIndex) => (
           <React.Fragment key={busIndex}>
             <Polyline
@@ -111,19 +86,17 @@ const CRUDView = () => {
             {busRoute.map((stop, stopIndex) => (
               <Marker key={`${busIndex}-${stopIndex}`} title={stop.name} coordinate={stop} pinColor={stopIndex === 0 ? 'blue' : 'red'} />
             ))}
-            {/* Display bus marker at the current bus position */}
             {busRoute.length > 0 && (
               <Marker
-              title={`Bus ${busIndex + 1}`}
-              coordinate={busRoute[0]}
-            >
-              <FontAwesome5 name="bus" size={30} color="blue" />
-            </Marker>
+                title={`Bus ${busIndex + 1}`}
+                coordinate={busRoute[currentStopIndexes[busIndex]]}
+              >
+                <FontAwesome5 name="bus" size={30} color="blue" />
+              </Marker>
             )}
           </React.Fragment>
         ))}
       </MapView>
-      {/* Stepper and other components can be added here if needed */}
     </View>
   );
 };

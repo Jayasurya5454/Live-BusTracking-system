@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Button, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Button, Animated, Alert } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
@@ -28,6 +28,7 @@ const StudentInfoScreen = () => {
   const [busPosition, setBusPosition] = useState(null);
   const [busStops, setBusStops] = useState([]);
   const [locations, setLocations] = useState([]);
+  const [alertDisplayed, setAlertDisplayed] = useState(false); // State to track if alert has been displayed
   const route = useRoute();
   const { rollNumber, busNumber } = route.params || {};
 
@@ -125,46 +126,6 @@ const StudentInfoScreen = () => {
     setShowUserData(!showUserData);
   };
 
-  const isFinalDestination = () => {
-    return busPositionIndex === locations.length - 1;
-  };
-
-  useEffect(() => {
-    if (isFinalDestination()) {
-      const sendSMS = async (body, to) => {
-        const accountSid = "AC4db63a134931c172c24d0ed88a86704b";
-        const authToken = "1673181c12e58465d6c0170c76c8759e";
-        const twilioPhoneNumber = "+12513195271";
-        const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
-      
-        const formData = new FormData();
-        formData.append('From', twilioPhoneNumber);
-        formData.append('To', to);
-        formData.append('Body', body);
-      
-        const credentials = `${accountSid}:${authToken}`;
-        const base64Credentials = base64Encode(credentials); // Encode credentials using base64Encode from 'base-64'
-      
-        try {
-          const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-              Authorization: `Basic ${base64Credentials}`,
-            },
-            body: formData,
-          });
-          const data = await response.json();
-          console.log(data);
-        } catch (error) {
-          console.error('Error sending SMS:', error);
-        }
-      };
-      
-      // Sending SMS to the specified phone number with a message
-      sendSMS("Your child has reached the school.", "+919043720850"); // Replace with actual phone number
-    }
-  }, [busPositionIndex]); 
-
   useEffect(() => {
     if (busStops.length > 0) {
       const interval = setInterval(() => {
@@ -209,6 +170,39 @@ const StudentInfoScreen = () => {
     }
   }, [busPositionIndex, busStops]);
 
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        const studentRef = ref(db, 'students');
+        const snapshot = await get(studentRef);
+        if (snapshot.exists()) {
+          const studentsData = snapshot.val();
+          const student = Object.values(studentsData).find(student => student.rollno === rollNumber);
+          if (student) {
+            // Compare student's current latitude and longitude with the bus position
+            if (student.current_lat === busPosition.latitude && student.current_long === busPosition.longitude && !alertDisplayed) {
+              setAlertDisplayed(true);
+              Alert.alert('Matched Bus Stop', `Your bus  have reached your stop.`);
+            }
+          } else {
+            console.log('Student not found');
+          }
+        } else {
+          console.log('No data found at the "students" node.');
+        }
+      } catch (error) {
+        console.error('Error fetching student data:', error);
+      }
+    };
+  
+    // Fetch student data when busPosition changes
+    if (busPosition && !alertDisplayed) {
+      fetchStudentData();
+    }
+  }, [busPosition, alertDisplayed]);
+  
+  
+
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3;
     const φ1 = (lat1 * Math.PI) / 180;
@@ -229,6 +223,19 @@ const StudentInfoScreen = () => {
     navigation.navigate('CROWDView');
   };
 
+  const fitMarkers = () => {
+    if (mapRef.current && busStops.length > 0) {
+      const coordinates = busStops.map(stop => ({ latitude: stop.latitude, longitude: stop.longitude }));
+      mapRef.current.fitToCoordinates(coordinates, {
+        edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+        animated: true,
+      });
+    }
+  };
+  
+  useEffect(() => {
+    fitMarkers();
+  }, [busStops]);
   return (
     <View style={styles.container}>
       <View style={styles.navBar}>
@@ -250,6 +257,7 @@ const StudentInfoScreen = () => {
           style={styles.map}
           provider={PROVIDER_GOOGLE}
           ref={mapRef}
+          onMapReady={fitMarkers}
         >
           <Polyline
             coordinates={busStops.map(stop => ({ latitude: stop.latitude, longitude: stop.longitude }))}
@@ -277,7 +285,7 @@ const StudentInfoScreen = () => {
         </Animated.View>
       )}
       <View style={styles.stepper}>
-        {locations.map((location, index) => (
+        {locations && locations.map((location, index) => (
           <TouchableOpacity
             key={index}
             style={[styles.step, index === busPositionIndex ? styles.activeStep : null]}
@@ -323,7 +331,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
-    marginBottom: 10, 
+    marginBottom: 10,
   },
   step: {
     padding: 15,

@@ -1,4 +1,4 @@
-import Twilio from 'twilio';
+/*import Twilio from 'twilio';
 
 const accountSid = "AC4db63a134931c172c24d0ed88a86704b";
 const authToken = "1673181c12e58465d6c0170c76c8759e";
@@ -22,3 +22,4 @@ const sendSMS = async (body, to) => {
 };
 
 export { sendSMS }; // Export the sendSMS function
+*/
